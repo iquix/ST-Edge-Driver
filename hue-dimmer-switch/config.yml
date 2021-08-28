@@ -1,0 +1,4 @@
+name: 'Hue Dimmer Switch'
+packageKey: 'hue-dimmer-switch'
+permissions:
+  zigbee: {}

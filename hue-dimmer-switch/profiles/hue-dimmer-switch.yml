@@ -1,0 +1,30 @@
+name: hue-dimmer-switch
+components:
+- id: button1
+  capabilities:
+  - id: button
+    version: 1
+- id: button2
+  capabilities:
+  - id: button
+    version: 1
+- id: button3
+  capabilities:
+  - id: button
+    version: 1
+- id: button4
+  capabilities:
+  - id: button
+    version: 1
+- id: main
+  capabilities:
+  - id: battery
+    version: 1
+  - id: button
+    version: 1    
+  categories:
+  - name: RemoteController
+metadata:
+  vid: a96e92a0-b276-38e7-be91-b499a29bc896
+  mnmn: SmartThingsCommunity
+  ocfDeviceType: x.com.st.d.remotecontroller  

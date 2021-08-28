@@ -1,0 +1,4 @@
+name: 'IKEA Shortcut Button'
+packageKey: 'ikea-shortcut-button'
+permissions:
+  zigbee: {}

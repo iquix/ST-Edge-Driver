@@ -1,0 +1,16 @@
+zigbeeManufacturer:
+  - id: hue-dimmer-switch-1
+    deviceLabel: Hue Dimmer Switch
+    manufacturer: Philips
+    model: RWL020
+    deviceProfileName: hue-dimmer-switch
+  - id: hue-dimmer-switch-2
+    deviceLabel: Hue Dimmer Switch
+    manufacturer: Philips
+    model: RWL021
+    deviceProfileName: hue-dimmer-switch
+  - id: hue-dimmer-switch-3
+    deviceLabel: Hue Dimmer Switch
+    manufacturer: Signify Netherlands B.V.
+    model: RWL022
+    deviceProfileName: hue-dimmer-switch
