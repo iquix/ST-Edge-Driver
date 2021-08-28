@@ -1,3 +1,18 @@
+-- IKEA Shortcut Button ver 0.1.2
+-- Copyright 2021 Jaewon Park (iquix)
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+
 local capabilities = require "st.capabilities"
 local ZigbeeDriver = require "st.zigbee"
 local defaults = require "st.zigbee.defaults"
@@ -6,7 +21,9 @@ local socket = require "socket"
 local p_time = 0
 
 local pushed_handler = function(driver, device, zb_rx)
-	device:emit_event(capabilities.button.button.pushed())
+	local ev = capabilities.button.button.pushed()
+	ev.state_change = true	
+	device:emit_event(ev)
 end
 
 local pressed_handler = function(driver, device, zb_rx)
@@ -20,9 +37,13 @@ local released_handler = function(driver, device, zb_rx)
 	if gap > 10 then
 		return
 	elseif gap >= 0.5 then
-		device:emit_event(capabilities.button.button.held())
+		local ev = capabilities.button.button.held()
+		ev.state_change = true
+		device:emit_event(ev)
 	elseif gap >= 0 then
-		device:emit_event(capabilities.button.button.pushed())
+		local ev = capabilities.button.button.pushed()
+		ev.state_change = true	
+		device:emit_event(ev)
 	end
 end
 

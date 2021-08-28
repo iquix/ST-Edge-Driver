@@ -1,4 +1,4 @@
--- Hue Dimmer Switch ver 0.1.1
+-- Hue Dimmer Switch ver 0.1.2
 -- Copyright 2021 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,11 +28,15 @@ local button_handler = function(driver, device, zb_rx)
 	--local buttonHoldTime = string.byte(rx:sub(7,7))
 	
 	if buttonState == 2 then
-		device.profile.components[comp[button]]:emit_event(capabilities.button.button.pushed())
-		device:emit_event(capabilities.button.button.pushed())
+		local ev = capabilities.button.button.pushed()
+		ev.state_change = true
+		device.profile.components[comp[button]]:emit_event(ev)
+		device:emit_event(ev)
 	elseif buttonState == 3 then
-		device.profile.components[comp[button]]:emit_event(capabilities.button.button.held())
-		device:emit_event(capabilities.button.button.held())
+		local ev = capabilities.button.button.held()
+		ev.state_change = true
+		device.profile.components[comp[button]]:emit_event(ev)
+		device:emit_event(ev)
 	end
 end
 
