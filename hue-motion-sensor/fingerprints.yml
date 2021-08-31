@@ -1,0 +1,6 @@
+zigbeeManufacturer:
+  - id: hue-motion-sensor
+    deviceLabel: Hue Motion Sensor
+    manufacturer: Philips
+    model: SML001
+    deviceProfileName: hue-motion-sensor
