@@ -19,7 +19,7 @@ preferences:
     explicit: true
   - name: motionSensitivity
     title: Motion Sensitivity
-    required: false
+    required: true
     preferenceType: enumeration
     definition:
       options:

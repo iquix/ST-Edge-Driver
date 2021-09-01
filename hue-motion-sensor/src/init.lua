@@ -1,4 +1,4 @@
--- Hue Motion Sensor ver 0.2.0
+-- Hue Motion Sensor ver 0.2.1
 -- Copyright 2021 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
