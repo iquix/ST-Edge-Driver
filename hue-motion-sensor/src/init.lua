@@ -32,11 +32,20 @@ local function illuminance_attr_handler(driver, device, value, zb_rx)
 	device:emit_event(capabilities.illuminanceMeasurement.illuminance(lux_value))
 end
 
+local function set_sensitivity(device)
+	local sensitivityTable = {sensitivityLow = 0, sensitivityMedium = 1, sensitivityHigh = 2}
+	device:send(cluster_base.write_manufacturer_specific_attribute(device, clusters.OccupancySensing.ID, 0x0030, 0x100b,
+		data_types.Uint8, sensitivityTable[device.preferences.motionSensitivity]))
+end
+
+local function do_configure(self, device)
+	device:configure()
+	set_sensitivity(device)
+end
+
 local function device_info_changed(driver, device, event, args)
 	if args.old_st_store.preferences.motionSensitivity ~= device.preferences.motionSensitivity then
-		local sensitivityTable = {sensitivityLow = 0, sensitivityMedium = 1, sensitivityHigh = 2}
-		device:send(cluster_base.write_manufacturer_specific_attribute(device, clusters.OccupancySensing.ID, 0x0030, 0x100b,
-			data_types.Uint8, sensitivityTable[device.preferences.motionSensitivity]))
+		set_sensitivity(device)
 	end
 end
 
@@ -79,7 +88,8 @@ local hue_motion_driver = {
 		}
 	},
 	lifecycle_handlers = {
-		infoChanged = device_info_changed
+		infoChanged = device_info_changed,
+		doConfigure = do_configure
 	}
 }
 
