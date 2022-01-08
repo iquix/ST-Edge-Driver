@@ -1,18 +1,10 @@
-name: hue-dimmer-switch
+name: hue-wall-switch
 components:
 - id: button1
   capabilities:
   - id: button
     version: 1
 - id: button2
-  capabilities:
-  - id: button
-    version: 1
-- id: button3
-  capabilities:
-  - id: button
-    version: 1
-- id: button4
   capabilities:
   - id: button
     version: 1
@@ -25,7 +17,7 @@ components:
   categories:
   - name: RemoteController
 metadata:
-  vid: generic-4-button
+  vid: generic-2-button
   mnmn: SmartThings
   ocfDeviceType: x.com.st.d.remotecontroller
 preferences:
@@ -39,3 +31,14 @@ preferences:
         h1: "When Holding Ends"
         h2: "Fire Multiple Events while Holding"
       default: "h0"
+  - name: swTypeValue
+    title: "Switch Type"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        singleRocker: "Single Rocker"
+        singlePush: "Single Push Button"
+        dualRocker: "Dual Rocker"
+        dualPush: "Dual Push Button"
+      default: "dualRocker"

@@ -14,3 +14,8 @@ zigbeeManufacturer:
     manufacturer: Signify Netherlands B.V.
     model: RWL022
     deviceProfileName: hue-dimmer-switch
+  - id: hue-wall-switch-1
+    deviceLabel: Hue Wall Switch
+    manufacturer: Signify Netherlands B.V.
+    model: RDM001
+    deviceProfileName: hue-wall-switch
