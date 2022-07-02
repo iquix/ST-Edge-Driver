@@ -1,0 +1,4 @@
+name: 'Tuya Window Shade'
+packageKey: 'tuya-window-shade'
+permissions:
+  zigbee: {}

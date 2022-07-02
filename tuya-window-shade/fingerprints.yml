@@ -1,0 +1,166 @@
+zigbeeManufacturer:
+  - id: "_TZE200_cowvfni3/TS0601"
+    deviceLabel: Zemismart Curtain Motor
+    manufacturer: _TZE200_cowvfni3
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_cowvfni3/owvfni3"
+    deviceLabel: Zemismart Curtain Motor
+    manufacturer: _TYST11_cowvfni3
+    model: owvfni3
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_wmcdj3aq/TS0601"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TZE200_wmcdj3aq
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_wmcdj3aq/mcdj3aq"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TYST11_wmcdj3aq
+    model: mcdj3aq
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_fzo2pocs/TS0601"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TZE200_fzo2pocs
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_fzo2pocs/zo2pocs"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TYST11_fzo2pocs
+    model: zo2pocs
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_fdtjuw7u/TS0601"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TZE200_fdtjuw7u
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_fdtjuw7u/dtjuw7u"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TYST11_fdtjuw7u
+    model: dtjuw7u
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_nogaemzt/TS0601"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TZE200_nogaemzt
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_nogaemzt/ogaemzt"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TYST11_nogaemzt
+    model: ogaemzt
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_5zbp6j0u/TS0601"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TZE200_5zbp6j0u
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_5zbp6j0u/zbp6j0u"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TYST11_5zbp6j0u
+    model: zbp6j0u
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_zpzndjez/TS0601"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TZE200_zpzndjez
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_zpzndjez/pzndjez"
+    deviceLabel: Tuya Curtain Motor
+    manufacturer: _TYST11_zpzndjez
+    model: pzndjez
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_bqcqqjpb/TS0601"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TZE200_bqcqqjpb
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_bqcqqjpb/qcqqjpb"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TYST11_bqcqqjpb
+    model: qcqqjpb
+    deviceProfileName: tuya-window-shade
+
+
+
+
+
+  - id: "_TZE200_xaabybja/TS0601"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TZE200_xaabybja
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_xaabybja/aabybja"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TYST11_xaabybja
+    model: aabybja
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_cf1sl3tj/TS0601"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TZE200_cf1sl3tj
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_cf1sl3tj/f1sl3tj"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TYST11_cf1sl3tj
+    model: f1sl3tj
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_r0jdjrvi/TS0601"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TZE200_r0jdjrvi
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_r0jdjrvi/0jdjrvi"
+    deviceLabel: Tuya Wireless Curtain Motor
+    manufacturer: _TYST11_r0jdjrvi
+    model: 0jdjrvi
+    deviceProfileName: tuya-window-shade
+
+
+
+
+
+  - id: "_TZE200_nueqqe6k/TS0601"
+    deviceLabel: Tuya Chain Motor
+    manufacturer: _TZE200_nueqqe6k
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_nueqqe6k/ueqqe6k"
+    deviceLabel: Tuya Chain Motor
+    manufacturer: _TYST11_nueqqe6k
+    model: ueqqe6k
+    deviceProfileName: tuya-window-shade
+
+  - id: "_TZE200_5sbebbzs/TS0601"
+    deviceLabel: Zemismart Blind with Battery
+    manufacturer: _TZE200_5sbebbzs
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_5sbebbzs/sbebbzs"
+    deviceLabel: Zemismart Blind with Battery
+    manufacturer: _TYST11_5sbebbzs
+    model: sbebbzs
+    deviceProfileName: tuya-window-shade
+
+
+
+
+
+  - id: "_TZE200_rmymn92d/TS0601"
+    deviceLabel: Zemismart Curtain Motor
+    manufacturer: _TZE200_rmymn92d
+    model: TS0601
+    deviceProfileName: tuya-window-shade-no-reverse
+  - id: "_TYST11_rmymn92d/mymn92d"
+    deviceLabel: Zemismart Curtain Motor
+    manufacturer: _TYST11_rmymn92d
+    model: mymn92d
+    deviceProfileName: tuya-window-shade-no-reverse

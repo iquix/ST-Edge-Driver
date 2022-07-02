@@ -1,0 +1,28 @@
+name: tuya-window-shade-no-reverse
+components:
+- id: main
+  capabilities:
+  - id: windowShade
+    version: 1
+  - id: windowShadeLevel
+    version: 1
+  - id: switchLevel
+    version: 1
+  - id: windowShadePreset
+    version: 1
+  categories:
+  - name: Blind
+metadata:
+  vid: 1bfe5e11-c20f-3500-9d7f-5f3227270e4e
+  mnmn: SmartThingsCommunity
+  ocfDeviceType: oic.d.blind
+preferences:
+  - name: fixPercent
+    title: "Fix percent"
+    description: "In SmartThings, 'fully open' SHOULD be 100% in level and 'fully closed' SHOULD be 0% in level. If shade level percentage is reversed, then turn on this option."
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - preferenceId: presetPosition
+    explicit: true
