@@ -1,0 +1,4 @@
+name: 'Tuya Plug by iquix'
+packageKey: 'tuya-plug'
+permissions:
+  zigbee: {}

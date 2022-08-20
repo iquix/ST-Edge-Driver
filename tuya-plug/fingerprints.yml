@@ -1,0 +1,9 @@
+zigbeeManufacturer:
+  - id: "TUYA/TS011F"
+    deviceLabel: "Tuya Plug"
+    model: TS011F
+    deviceProfileName: switch-power-energy-ste
+  - id: "TUYA/TS0121"
+    deviceLabel: "Tuya Plug"
+    model: TS0121
+    deviceProfileName: switch-power-energy-ste

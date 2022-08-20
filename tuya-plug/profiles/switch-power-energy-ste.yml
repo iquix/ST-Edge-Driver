@@ -1,0 +1,36 @@
+name: switch-power-energy-ste
+components:
+  - id: main
+    capabilities:
+      - id: switch
+        version: 1
+      - id: powerMeter
+        version: 1
+      - id: energyMeter
+        version: 1
+      - id: powerConsumptionReport
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: SmartPlug
+preferences:
+  - name: powerPolling
+    title: "Power Polling Preference"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        p0: "Automatic (default)"
+        p1: "Force Enable Power Polling"
+        p2: "Force disable Power Polling"
+      default: p0
+  - name: energyPolling
+    title: "Force Energy Consumption Polling"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+metadata:
+  mnmn: SmartThingsEdge
+  vid: STES-1-Dawon-Zigbee_Smart_Plug
