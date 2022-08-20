@@ -82,7 +82,7 @@ end
 
 local function is_zemi_blind(device)
 	local p = product_id(device)
-	return (p == "mcdj3aq" or p == "zo2pocs")
+	return (p == "mcdj3aq" or p == "zo2pocs" or p == "eue9vhc")
 end
 
 local function is_dp2_position_devices(device)

@@ -164,3 +164,14 @@ zigbeeManufacturer:
     manufacturer: _TYST11_rmymn92d
     model: mymn92d
     deviceProfileName: tuya-window-shade-no-reverse
+
+  - id: "_TZE200_7eue9vhc/TS0601"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TZE200_7eue9vhc
+    model: TS0601
+    deviceProfileName: tuya-window-shade-no-reverse
+  - id: "_TYST11_7eue9vhc/eue9vhc"
+    deviceLabel: Zemismart Blind Motor
+    manufacturer: _TYST11_7eue9vhc
+    model: eue9vhc
+    deviceProfileName: tuya-window-shade-no-reverse
