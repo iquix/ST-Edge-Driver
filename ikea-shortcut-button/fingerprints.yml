@@ -1,6 +1,0 @@
-zigbeeManufacturer:
-  - id: "ikea-shortcut-button-1"
-    deviceLabel: IKEA Shortcut Button
-    manufacturer: IKEA of Sweden
-    model: TRADFRI SHORTCUT Button
-    deviceProfileName: ikea-shortcut-button
