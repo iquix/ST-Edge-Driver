@@ -1,4 +1,4 @@
--- Tuya Window Shade ver 0.4.0
+-- Tuya Window Shade ver 0.4.1
 -- Copyright 2021-2022 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -108,7 +108,7 @@ local function level_val(device, level)
 	local ret
 	local prod = product_id(device)
 	if prod=="ogaemzt" then
-		ret = (level == level%256) and level or 100-level
+		ret = (level == level%256) and level or 100-(level%256)
 	else
 		local fixpercent_devices = {["owvfni3"]=true, ["zbp6j0u"]=true, ["pzndjez"]=true, ["qcqqjpb"]=true, ["ueqqe6k"]=true, ["sbebbzs"]=true, ["aabybja"]=true, ["mymn92d"]=true, ["0jdjrvi"]=true}
 		ret = fixpercent_devices[prod] and 100-level or level
