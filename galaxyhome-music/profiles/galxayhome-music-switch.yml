@@ -1,0 +1,31 @@
+name: galxayhome-music-switch
+components:
+- id: main
+  capabilities:
+  - id: switch
+    version: 1
+preferences:
+  - title: "IP address of the Galaxy Home"
+    name: ipAddress
+    required: true
+    preferenceType: string
+    definition:
+      minLength: 7
+      maxLength: 15
+      stringType: text
+      default: 192.168.0.0
+  - title: "Media URI"
+    name: mediauri
+    description: "Media URI"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: "http://"
+  - title: "Toggle to Create Additional Switch"
+    name: createDev
+    description: "Turn off and turn back ON to create an additional switch"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true

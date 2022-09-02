@@ -1,0 +1,5 @@
+name: 'Galaxy Home Music Switch'
+packageKey: 'galaxyhome-music'
+permissions:
+  lan: {}
+  discovery: {}
