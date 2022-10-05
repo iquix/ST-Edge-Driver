@@ -150,6 +150,17 @@ zigbeeManufacturer:
     model: sbebbzs
     deviceProfileName: tuya-window-shade
 
+  - id: "_TZE200_xuzcvlku/TS0601"
+    deviceLabel: Zemismart Blind with Battery
+    manufacturer: _TZE200_xuzcvlku
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_xuzcvlku/uzcvlku"
+    deviceLabel: Zemismart Blind with Battery
+    manufacturer: _TYST11_xuzcvlku
+    model: uzcvlku
+    deviceProfileName: tuya-window-shade
+
 
 
 

@@ -1,4 +1,4 @@
--- Tuya Window Shade ver 0.4.1
+-- Tuya Window Shade ver 0.4.2
 -- Copyright 2021-2022 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,7 +87,7 @@ end
 
 local function is_dp2_position_devices(device)
 	local p = product_id(device)
-	return (p == "ueqqe6k" or p == "sbebbzs")
+	return (p == "ueqqe6k" or p == "sbebbzs" or p == "uzcvlku")
 end
 
 local function support_dp1_state(device)
@@ -110,7 +110,7 @@ local function level_val(device, level)
 	if prod=="ogaemzt" then
 		ret = (level == level%256) and level or 100-(level%256)
 	else
-		local fixpercent_devices = {["owvfni3"]=true, ["zbp6j0u"]=true, ["pzndjez"]=true, ["qcqqjpb"]=true, ["ueqqe6k"]=true, ["sbebbzs"]=true, ["aabybja"]=true, ["mymn92d"]=true, ["0jdjrvi"]=true}
+		local fixpercent_devices = {["owvfni3"]=true, ["zbp6j0u"]=true, ["pzndjez"]=true, ["qcqqjpb"]=true, ["ueqqe6k"]=true, ["sbebbzs"]=true, ["uzcvlku"]=true, ["aabybja"]=true, ["mymn92d"]=true, ["0jdjrvi"]=true}
 		ret = fixpercent_devices[prod] and 100-level or level
 	end
 	return device.preferences.fixPercent and 100-ret or ret
