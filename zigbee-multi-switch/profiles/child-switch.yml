@@ -1,0 +1,6 @@
+name: child-switch
+components:
+- id: main
+  capabilities:
+  - id: switch
+    version: 1

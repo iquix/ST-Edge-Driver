@@ -1,0 +1,4 @@
+name: 'Zigbee Multi Switch by iquix'
+packageKey: 'zigbee-multi-switch'
+permissions:
+  zigbee: {}

@@ -1,0 +1,8 @@
+zigbeeGeneric:
+  - id: genericSwitch
+    deviceLabel: Zigbee Switch
+    clusters:
+      server:
+        - 0x0006 #OnOff
+    deviceProfileName: zigbee-switch
+    isJoinable: false
