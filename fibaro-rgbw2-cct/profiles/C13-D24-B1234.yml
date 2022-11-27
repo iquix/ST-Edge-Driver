@@ -1,0 +1,314 @@
+name: C13-D24-B1234
+components:
+- id: main
+  label: "CCT Light 1"
+  capabilities:
+  - id: switch
+    version: 1
+  - id: switchLevel
+    version: 1
+    config:
+      values:
+        - key: "level.value"
+          range: [1, 100]
+  - id: colorTemperature
+    version: 1
+    config:
+      values:
+        - key: "colorTemperature.value"
+          range: [2700, 6500]
+  - id: refresh
+    version: 1
+  categories:
+  - name: Light
+
+- id: light2
+  label: "Dimmer Light 2"
+  capabilities:
+  - id: switch
+    version: 1
+  - id: switchLevel
+    version: 1
+    config:
+      values:
+        - key: "level.value"
+          range: [1, 100]
+  categories:
+  - name: Light
+
+- id: light3
+  label: "CCT Light 3"
+  capabilities:
+  - id: switch
+    version: 1
+  - id: switchLevel
+    version: 1
+    config:
+      values:
+        - key: "level.value"
+          range: [1, 100]
+  - id: colorTemperature
+    version: 1
+    config:
+      values:
+        - key: "colorTemperature.value"
+          range: [2700, 6500]
+  categories:
+  - name: Light
+
+- id: light4
+  label: "Dimmer Light 4"
+  capabilities:
+  - id: switch
+    version: 1
+  - id: switchLevel
+    version: 1
+    config:
+      values:
+        - key: "level.value"
+          range: [1, 100]
+  categories:
+  - name: Light
+
+
+- id: button1
+  label: "Button IN 1"
+  capabilities:
+  - id: button
+    version: 1
+- id: button2
+  label: "Button IN 2"
+  capabilities:
+  - id: button
+    version: 1
+- id: button3
+  label: "Button IN 3"
+  capabilities:
+  - id: button
+    version: 1
+- id: button4
+  label: "Button IN 4"
+  capabilities:
+  - id: button
+    version: 1
+
+
+
+preferences:
+  - name: profileValue
+    title: "Device Profile for ST app display"
+    description: "Select profile to determine what to display in ST app"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        C13_D24_B1234: "All: CCT13 Dim24 Btn1234"
+        C1: "CCT1"
+        D1: "Dim1"
+        B1234: "Btn1234"
+        C13: "CCT13"
+        C1_B3: "CCT1 Btn3"
+        C1_D34: "CCT1 Dim34"
+        C3_B12: "CCT3 Btn12"
+        D12_B34: "Dim12 Btn34"
+      default: C13_D24_B1234
+
+  - name: lightMode1
+    title: "Mode of Light (R)"
+    description: "Mode of Light: Channel R"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        disabled: "Disabled"
+        dimmer: "Dimmer"
+        cw_ww: "CCT: CW/WW"
+        level_cct: "CCT: Level/CCT"
+        builtin_level: "CCT: CW/WW, built-in on/off & level"
+      default: builtin_level
+
+  - name: lightMode2
+    title: "Mode of Light (G)"
+    description: "Mode of Light: Channel G"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        disabled: "disabled"
+        dimmer: "Dimmer"
+        cct: "CCT with channel R"
+      default: cct
+
+  - name: lightMode3
+    title: "Mode of Light (B)"
+    description: "Mode of Light: Channel B"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        disabled: "Disabled"
+        dimmer: "Dimmer"
+        cw_ww: "CCT: CW/WW"
+        level_cct: "CCT: Level/CCT"
+      default: disabled
+      
+  - name: lightMode4
+    title: "Mode of Light (W)"
+    description: "Mode of Light: Channel W"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        disabled: "disabled"
+        dimmer: "Dimmer"
+        cct: "CCT with channel B"
+      default: disabled
+
+  - title: "Toggle to Create Child Devices"
+    name: createChild
+    description: "Turn off and turn back ON to create child devices"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+
+
+
+  - name: transitionTime
+    title: "Transition Time"
+    description: "SwitchColor, On/Off transition time: 0-127 (0s-127s, 1s step) / 128-254 (1min-127min, 1min step)"
+    required: true
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 254
+      default: 3
+
+
+
+
+
+  - name: powerRecovery
+    title: "1) Power Recovery"
+    description: "Remember device status before the power failure"
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "Off"
+        1: "Restores state before power failure"
+        2: "On"
+      default: 0
+  - name: input1Type
+    title: "20) input 1 Type"
+    description: "This parameter allows to choose mode of 1st input (IN1)."
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "Analog input without internal pullup"
+        1: "Analog input with internal pullup"
+        2: "Momentary switch"
+        3: "Toggle: state on every input change"
+        4: "Toggle: closed – ON, open – OFF"
+      default: 2
+  - name: input2Type
+    title: "21) input 2 Type"
+    description: "This parameter allows to choose mode of 1st input (IN2)."
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "Analog input without internal pullup"
+        1: "Analog input with internal pullup"
+        2: "Momentary switch"
+        3: "Toggle: state on every input change"
+        4: "Toggle: closed – ON, open – OFF"
+      default: 2
+  - name: input3Type
+    title: "22) input 3 Type"
+    description: "This parameter allows to choose mode of 1st input (IN3)."
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "Analog input without internal pullup"
+        1: "Analog input with internal pullup"
+        2: "Momentary switch"
+        3: "Toggle: state on every input change"
+        4: "Toggle: closed – ON, open – OFF"
+      default: 2
+  - name: input4Type
+    title: "23) input 4 Type"
+    description: "This parameter allows to choose mode of 1st input (IN4)."
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "Analog input without internal pullup"
+        1: "Analog input with internal pullup"
+        2: "Momentary switch"
+        3: "Toggle: state on every input change"
+        4: "Toggle: closed – ON, open – OFF"
+      default: 2
+
+
+  - name: powerReportingFrequency
+    title: "62) Power Reporting Frequency"
+    description: "time intervals the periodic power reports are sent (sec)"
+    required: false
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 32400
+      default: 3600
+
+  - name: analogReportingThreshold
+    title: "63) Analog Reporting Threshold"
+    description: "minimal change of analog input voltage for report (0.1V step)"
+    required: false
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 100
+      default: 5
+  - name: analogReportingFrequency
+    title: "64) Analog Reporting Frequency"
+    description: "time intervals the periodic analog reports are sent (sec)"
+    required: false
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 32400
+      default: 0
+
+
+  - name: inputsMode
+    title: "150) Inputs control mode"
+    description: " determines how connected switches control LED strips."
+    required: false
+    preferenceType: enumeration
+    definition:
+      options:
+        0: "RGBW mode"
+        1: "HSB and White mode"
+      default: 0
+
+  - name: dimmerRampRateLocal
+    title: "151) dimmerRampRateLocal"
+    description: "Local control transition time: 0-127 (0s-127s, 1s step) / 128-254 (1min-127min, 1min step)"
+    required: false
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 254
+      default: 3
+  - name: dimmerRampRateRemote
+    title: "152) dimmerRampRateRemote"
+    description: "Remote control transition time: 0-127 (0s-127s, 1s step) / 128-254 (1min-127min, 1min step)"
+    required: false
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 254
+      default: 3

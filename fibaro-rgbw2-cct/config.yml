@@ -1,0 +1,4 @@
+name: 'Fibaro RGBW2 CCT mode'
+packageKey: 'fibaro-rgbw2-cct'
+permissions:
+  zwave: {}

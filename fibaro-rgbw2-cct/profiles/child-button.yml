@@ -1,0 +1,9 @@
+name: child-button
+components:
+- id: main
+  capabilities:
+  - id: button
+    version: 1
+  categories:
+    - name: Button
+      categoryType: manufacturer
