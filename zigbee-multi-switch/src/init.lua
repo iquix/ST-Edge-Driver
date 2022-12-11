@@ -53,7 +53,7 @@ end
 --------------------------------------------------
 
 local function find_child(parent, endpoint)
-	if endpoint == 1 then
+	if endpoint == parent.fingerprinted_endpoint_id then
 		return parent
 	else
 		return parent:get_child_by_parent_assigned_key(string.format("%02X", endpoint))
@@ -77,7 +77,7 @@ local function create_child_devices(driver, device)
 	end
 	
 	for i, ep in pairs(ep_array) do
-		if ep ~= 1 then
+		if ep ~= device.fingerprinted_endpoint_id then
 			if find_child(device, ep) == nil then
 				local metadata = {
 					type = "EDGE_CHILD",
@@ -97,12 +97,12 @@ end
 --------------------------------------------------
 
 function switch_on_handler(driver, device, command)
-	local ep = (device.network_type == st_device.NETWORK_TYPE_CHILD) and tonumber(device.parent_assigned_child_key, 16) or 1
+	local ep = (device.network_type == st_device.NETWORK_TYPE_CHILD) and tonumber(device.parent_assigned_child_key, 16) or device.fingerprinted_endpoint_id
 	device:send(zcl_clusters.OnOff.server.commands.On(device):to_endpoint(ep))
 end
 
 function switch_off_handler(driver, device, command)
-	local ep = (device.network_type == st_device.NETWORK_TYPE_CHILD) and tonumber(device.parent_assigned_child_key, 16) or 1
+	local ep = (device.network_type == st_device.NETWORK_TYPE_CHILD) and tonumber(device.parent_assigned_child_key, 16) or device.fingerprinted_endpoint_id
 	device:send(zcl_clusters.OnOff.server.commands.Off(device):to_endpoint(ep))
 end
 
