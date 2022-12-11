@@ -4,3 +4,14 @@ components:
   capabilities:
   - id: switch
     version: 1
+
+preferences:
+  - name: forceChild
+    title: "Force Create Child Switches"
+    description: "# of switches (0: automatic)"
+    required: true
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 20
+      default: 0
