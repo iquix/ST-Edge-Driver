@@ -1,4 +1,4 @@
--- Zigbee Switch with Child ver 0.4.2
+-- Zigbee Switch with Child ver 0.4.3
 -- Copyright 2021-2022 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
