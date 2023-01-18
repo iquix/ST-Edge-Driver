@@ -100,6 +100,7 @@ zigbeeManufacturer:
 
 
 
+
   - id: "_TZE200_bqcqqjpb/TS0601"
     deviceLabel: Tuya Window Shade
     manufacturer: _TZE200_bqcqqjpb
@@ -132,7 +133,6 @@ zigbeeManufacturer:
     manufacturer: _TYST11_cf1sl3tj
     model: f1sl3tj
     deviceProfileName: tuya-window-shade
-
 
 
 
@@ -170,6 +170,16 @@ zigbeeManufacturer:
     model: uzcvlku
     deviceProfileName: tuya-window-shade
 
+  - id: "_TZE200_zxxfv8wi/TS0601"
+    deviceLabel: Tuya Window Shade
+    manufacturer: _TZE200_zxxfv8wi
+    model: TS0601
+    deviceProfileName: tuya-window-shade
+  - id: "_TYST11_zxxfv8wi/xxfv8wi"
+    deviceLabel: Tuya Window Shade
+    manufacturer: _TYST11_zxxfv8wi
+    model: xxfv8wi
+    deviceProfileName: tuya-window-shade
 
 
 
@@ -195,7 +205,6 @@ zigbeeManufacturer:
     manufacturer: _TYST11_7eue9vhc
     model: eue9vhc
     deviceProfileName: tuya-window-shade-no-reverse
-
 
 
 
