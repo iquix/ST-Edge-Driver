@@ -270,7 +270,10 @@ local function set_switch_on_off(driver, device, cmd)
     if device.preferences.lightMode1 == 'builtin_level' then
       -- when using built-in on/off and level
       local dimmingDuration = cmd.args.rate or constants.DEFAULT_DIMMING_DURATION -- dimming duration in seconds
-      local delay = math.max(dimmingDuration + constants.DEFAULT_POST_DIMMING_DELAY, constants.MIN_DIMMING_GET_STATUS_DELAY) -- delay in seconds
+      local delay = constants.MIN_DIMMING_GET_STATUS_DELAY -- delay in seconds
+      if type(dimmingDuration) == "number" then
+        delay = math.max(dimmingDuration + constants.DEFAULT_POST_DIMMING_DELAY, delay) -- delay in seconds
+      end
       device:send(SwitchMultilevel:Set({value = (cmd.command=='on' and 0xFF or 0x00)}))
       device.thread:call_with_delay(delay, function() device:send(SwitchMultilevel:Get({})) end)
       send_event(device, comp, capabilities.switch.switch(cmd.command))   -- optimistic
@@ -314,7 +317,10 @@ local function set_level(driver, device, cmd)
     if device.preferences.lightMode1 == 'builtin_level' then
       local level = utils.clamp_value(utils.round(cmd.args.level), 1, 99)   -- never allow level 0
       local dimmingDuration = cmd.args.rate or constants.DEFAULT_DIMMING_DURATION -- dimming duration in seconds
-      local delay = math.max(dimmingDuration + constants.DEFAULT_POST_DIMMING_DELAY, constants.MIN_DIMMING_GET_STATUS_DELAY) -- delay in seconds
+      local delay = constants.MIN_DIMMING_GET_STATUS_DELAY -- delay in seconds
+      if type(dimmingDuration) == "number" then
+        delay = math.max(dimmingDuration + constants.DEFAULT_POST_DIMMING_DELAY, delay) -- delay in seconds
+      end
       device:send(SwitchMultilevel:Set({ value=level, duration=dimmingDuration }))
       device.thread:call_with_delay(delay, function() device:send(SwitchMultilevel:Get({})) end)
     elseif device.preferences.lightMode1 ~= 'disabled' then   --CCT or dimmer
