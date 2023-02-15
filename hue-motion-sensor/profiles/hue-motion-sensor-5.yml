@@ -1,4 +1,4 @@
-name: hue-motion-sensor
+name: hue-motion-sensor-5
 components:
 - id: main
   capabilities:
@@ -26,4 +26,6 @@ preferences:
         sensitivityLow: "Low"
         sensitivityMedium: "Medium"
         sensitivityHigh: "High"
-      default: "sensitivityHigh"
+        sensitivityVeryHigh: "Very High"
+        sensitivityMax: "Max"
+      default: "sensitivityMax"

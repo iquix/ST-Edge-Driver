@@ -1,4 +1,4 @@
--- Hue Motion Sensor ver 0.2.1
+-- Hue Motion Sensor ver 0.2.2
 -- Copyright 2021 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ local function illuminance_attr_handler(driver, device, value, zb_rx)
 end
 
 local function set_sensitivity(device)
-	local sensitivityTable = {sensitivityLow = 0, sensitivityMedium = 1, sensitivityHigh = 2}
+	local sensitivityTable = {sensitivityLow = 0, sensitivityMedium = 1, sensitivityHigh = 2, sensitivityVeryHigh = 3, sensitivityMax = 4}
 	device:send(cluster_base.write_manufacturer_specific_attribute(device, clusters.OccupancySensing.ID, 0x0030, 0x100b,
 		data_types.Uint8, sensitivityTable[device.preferences.motionSensitivity]))
 end

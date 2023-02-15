@@ -13,9 +13,9 @@ zigbeeManufacturer:
     deviceLabel: Hue Motion Sensor
     manufacturer: Signify Netherlands B.V.
     model: SML003
-    deviceProfileName: hue-motion-sensor
+    deviceProfileName: hue-motion-sensor-5
   - id: hue-motion-outdoor-sensor-sml004
     deviceLabel: Hue Motion Outdoor Sensor
     manufacturer: Signify Netherlands B.V.
     model: SML004
-    deviceProfileName: hue-motion-sensor
+    deviceProfileName: hue-motion-sensor-5
