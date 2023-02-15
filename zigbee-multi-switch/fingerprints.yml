@@ -1,8 +1,73 @@
+zigbeeManufacturer:
+  - id: "FeiBit/FNB56-ZSW01LX2.0"
+    deviceLabel: Zigbee Switch
+    manufacturer: FeiBit
+    model: FNB56-ZSW01LX2.0
+    deviceProfileName: zigbee-switch
+  - id: "FeiBit/FNB56-ZSW02LX2.0"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: FeiBit
+    model: FNB56-ZSW02LX2.0
+    deviceProfileName: zigbee-switch
+  - id: "FeiBit/FNB56-ZSW03LX2.0"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: FeiBit
+    model: FNB56-ZSW03LX2.0
+    deviceProfileName: zigbee-switch
+
+  - id: "_TZ3000_ddg0cycp/TS0001"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TZ3000_ddg0cycp
+    model: TS0001
+    deviceProfileName: zigbee-switch
+  - id: "_TZ3000_tas0zemd/TS0002"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TZ3000_tas0zemd
+    model: TS0002
+    deviceProfileName: zigbee-switch
+  - id: "_TZ3000_pdevogdj/TS0003"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TZ3000_pdevogdj
+    model: TS0003
+    deviceProfileName: zigbee-switch
+  - id: "_TYZB01_ddg0cycp/TS0001"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TYZB01_ddg0cycp
+    model: TS0001
+    deviceProfileName: zigbee-switch
+  - id: "_TYZB01_tas0zemd/TS0002"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TYZB01_tas0zemd
+    model: TS0002
+    deviceProfileName: zigbee-switch
+  - id: "_TYZB01_pdevogdj/TS0003"
+    deviceLabel: Zigbee Multi Switch
+    manufacturer: _TYZB01_pdevogdj
+    model: TS0003
+    deviceProfileName: zigbee-switch
+
+
 zigbeeGeneric:
   - id: genericSwitch
     deviceLabel: Zigbee Multi Switch
+    zigbeeProfiles:
+      - 0x0104
     clusters:
       server:
         - 0x0006 #OnOff
     deviceProfileName: zigbee-switch
-    isJoinable: true
+  - id: genericSwitchZLL
+    deviceLabel: Zigbee Multi Switch
+    zigbeeProfiles:
+      - 0xC05E
+    clusters:
+      server:
+        - 0x0006 #OnOff
+    deviceProfileName: zigbee-switch
+  - id: genericTuyaMCUSwitch
+    deviceLabel: Zigbee Multi Switch
+    clusters:
+      server:
+        - 0xEF00 #Tuya
+    deviceProfileName: zigbee-switch
+    isJoinable: false
