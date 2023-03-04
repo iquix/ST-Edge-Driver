@@ -1,4 +1,4 @@
--- tuya Plug ver 0.1.0
+-- tuya Plug ver 0.1.1
 -- Copyright 2022 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,7 +101,7 @@ end
 local function energy_meter_handler(driver, device, value, zb_rx)
   local raw_value = value.value
   local multiplier = device:get_field(constants.SIMPLE_METERING_MULTIPLIER_KEY) or 1
-  local divisor = device:get_field(constants.SIMPLE_METERING_DIVISOR_KEY) or 1000
+  local divisor = device:get_field(constants.SIMPLE_METERING_DIVISOR_KEY) or 100
   local converted_value = raw_value * multiplier/divisor
 
   local delta_energy = 0.0
@@ -125,7 +125,7 @@ end
 
 local function device_added(self, device)
   log.debug("** device_added()")
-  device:set_field(constants.SIMPLE_METERING_DIVISOR_KEY, 1000, {persist = true})
+  device:set_field(constants.SIMPLE_METERING_DIVISOR_KEY, 100, {persist = true})
 end
 
 local function device_init(self, device)
