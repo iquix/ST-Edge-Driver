@@ -12,18 +12,17 @@ components:
     version: 1
   categories:
   - name: MotionSensor
-metadata:
-  ocfDeviceType: x.com.st.d.sensor.motion
 preferences:
   - preferenceId: tempOffset
     explicit: true
   - name: motionSensitivity
-    title: Motion Sensitivity
+    title: "Motion Sensitivity Level"
     required: true
+    preferenceId: motionSensitivityAvoidSTError
     preferenceType: enumeration
     definition:
       options:
         sensitivityLow: "Low"
         sensitivityMedium: "Medium"
         sensitivityHigh: "High"
-      default: "sensitivityHigh"
+      default: sensitivityHigh
