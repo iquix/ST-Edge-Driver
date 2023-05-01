@@ -1,4 +1,4 @@
--- Tuya Window Shade ver 0.4.3
+-- Tuya Window Shade ver 0.5.0
 -- Copyright 2021-2022 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ local data_types = require "st.zigbee.data_types"
 local zb_const = require "st.zigbee.constants"
 local generic_body = require "st.zigbee.generic_body"
 local window_preset_defaults = require "st.zigbee.defaults.windowShadePreset_defaults"
-local _log = require "log"
+local log = require "log"
 
 
 ---------- Constant Definitions ----------
@@ -35,6 +35,7 @@ local DP_TYPE_ENUM = "\x04"
 local packet_id = 0
 local MOVING = "moving"
 local LEVEL_CMD_VAL = "levelCmdVal"
+local PARAMS = "params"
 
 
 ---------- send Tuya Command Function ----------
@@ -101,6 +102,34 @@ local function does_report_start_pos(device)
 end
 
 
+---------- Parameter Functions ----------
+
+
+function parse_params(device)
+  local params = {}
+  local s = device.preferences.advancedParams
+  if s ~= nil then
+    s = s:lower():gsub("%s", "")
+    for k, v in string.gmatch(s, "([^,=?]+)=([^,=?]+)") do  -- comma separated
+      if v == "true" then
+        v = true
+      elseif v == "false" then
+        v = false
+      elseif tonumber(v) ~= nil then
+        v = tonumber(v)
+      end
+      params[k] = v
+    end
+  end
+  device:set_field(PARAMS, params)
+end
+
+function get_params(device)
+  local params = device:get_field(PARAMS)
+  return (params == nil) and {} or params
+end
+
+
 ---------- Device Specific Level/Direction Functions ----------
 
 
@@ -131,7 +160,7 @@ end
 local function level_event_moving(device, level)
   local current_level = get_current_level(device)
   if current_level == nil or current_level == level then
-    _log.info("Ignore invalid reports")
+    log.info("Ignore invalid reports")
   else
     if current_level < level then
       device:emit_event(capabilities.windowShade.windowShade.opening())
@@ -184,7 +213,7 @@ local function tuya_cluster_handler(driver, device, zb_rx)
   local dp = string.byte(rx:sub(3,3))
   local fncmd_len = string.unpack(">I2", rx:sub(5,6))
   local fncmd = string.unpack(">I"..fncmd_len, rx:sub(7))
-  _log.debug(string.format("dp=%d, fncmd=%d", dp, fncmd))
+  log.debug(string.format("dp=%d, fncmd=%d", dp, fncmd))
   if dp == 1 then -- 0x01: Control -- Opening/closing/stopped
     if fncmd == 1 then
       device:set_field(MOVING, false)
@@ -202,7 +231,7 @@ local function tuya_cluster_handler(driver, device, zb_rx)
   elseif dp == 3 then -- 0x03: Percent state -- Arrived at position
     level_event_arrived(device, level_val(device, fncmd))
   elseif dp == 5 then -- 0x05: Direction state
-    _log.info("direction state of the motor is "..(fncmd and "reverse" or "forward"))
+    log.info("direction state of the motor is "..(fncmd and "reverse" or "forward"))
   elseif dp == 6 then -- 0x06: Arrived at destination (with fncmd==0)
     local level_cmd_val = device:get_field(LEVEL_CMD_VAL)
     if fncmd == 0 and level_cmd_val ~=nil then
@@ -253,6 +282,7 @@ end
 
 local function window_shade_level_set_shade_level_handler(driver, device, command)
   local current_level = get_current_level(device)
+  local params = get_params(device)
   if current_level == command.args.shadeLevel then
     device:emit_event(capabilities.windowShadeLevel.shadeLevel(current_level))
     device:emit_event(capabilities.switchLevel.level(current_level))
@@ -262,7 +292,15 @@ local function window_shade_level_set_shade_level_handler(driver, device, comman
       set_event(device) -- to prevent showing 'network error' in SmartThings app
     end)
   end
-  send_tuya_command(device, "\x02", DP_TYPE_VALUE, string.pack(">I4", level_val(device, command.args.shadeLevel)))
+  if command.args.shadeLevel == 0 and params.replace_setlevel_0_with_close == true then
+    log.debug("sending close command instead of set level 0 command")
+    send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x02")
+  elseif command.args.shadeLevel == 100 and params.replace_setlevel_100_with_open == true then
+    log.debug("sending open command instead of set level 100 command")
+    send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x00")
+  else
+    send_tuya_command(device, "\x02", DP_TYPE_VALUE, string.pack(">I4", level_val(device, command.args.shadeLevel)))
+  end
 end
 
 local function switch_level_set_level_handler(driver, device, command)
@@ -288,7 +326,14 @@ local function device_added(driver, device)
   end
 end
 
+local function device_init(driver, device)
+  parse_params(device)
+end
+
 local function device_info_changed(driver, device, event, args)
+  if args.old_st_store.preferences.advancedParams ~= device.preferences.advancedParams then
+    parse_params(device)
+  end
   if args.old_st_store.preferences.reverse ~= device.preferences.reverse then
     send_tuya_command(device, "\x05", DP_TYPE_ENUM, device.preferences.reverse and "\x01" or "\x00")
   end
@@ -334,6 +379,7 @@ local tuya_window_shade_driver = {
   },
   lifecycle_handlers = {
     added = device_added,
+    init = device_init,
     infoChanged = device_info_changed
   }
 }

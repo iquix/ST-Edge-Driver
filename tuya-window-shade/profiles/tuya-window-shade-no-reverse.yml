@@ -26,3 +26,11 @@ preferences:
       default: false
   - preferenceId: presetPosition
     explicit: true
+  - name: advancedParams
+    title: "Advanced Parameters"
+    description: "Type advanced option parameters here.(comma separated) If not necessary, leave it blank."
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
