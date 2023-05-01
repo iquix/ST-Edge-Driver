@@ -1,4 +1,4 @@
--- Zigbee Switch with Child ver 0.5.0
+-- Zigbee Switch with Child ver 0.5.1
 -- Copyright 2021-2022 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,13 +73,15 @@ local function is_tuya_mcu_switch(device)
 end
 
 local function send_tuya_command(device, dp, dp_type, fncmd) 
+  local parent = (device.network_type == st_device.NETWORK_TYPE_CHILD) and device:get_parent_device() or device
   local zclh = zcl_messages.ZclHeader({cmd = data_types.ZCLCommandId(SET_DATA)})
   zclh.frame_ctrl:set_cluster_specific()
+  zclh.frame_ctrl:set_disable_default_response()
   local addrh = messages.AddressHeader(
     zb_const.HUB.ADDR,
     zb_const.HUB.ENDPOINT,
-    device:get_short_address(),
-    device:get_endpoint(CLUSTER_TUYA),
+    parent:get_short_address(),
+    parent:get_endpoint(CLUSTER_TUYA),
     zb_const.HA_PROFILE_ID,
     CLUSTER_TUYA
   )
@@ -94,7 +96,7 @@ local function send_tuya_command(device, dp, dp_type, fncmd)
     address_header = addrh,
     body = message_body
   })
-  device:send(send_message)
+  parent:send(send_message)
 end
 
 local function configure_tuya_magic_packet(device)
@@ -181,7 +183,9 @@ local function tuya_cluster_handler(driver, device, zb_rx)
   local dp = string.byte(rx:sub(3,3))
   local fncmd_len = string.unpack(">I2", rx:sub(5,6))
   local fncmd = string.unpack(">I"..fncmd_len, rx:sub(7))
-  device:emit_event_for_endpoint(dp, capabilities.switch.switch(fncmd == 1 and "on" or "off"))
+  if dp == device.fingerprinted_endpoint_id or find_child(device, dp) ~= nil then
+    device:emit_event_for_endpoint(dp, capabilities.switch.switch(fncmd == 0 and "off" or "on"))
+  end
 end
 
 local function default_response_handler(driver, device, zb_rx)
