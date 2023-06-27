@@ -1,5 +1,5 @@
--- Hue Motion Sensor ver 0.2.2
--- Copyright 2021 Jaewon Park (iquix)
+-- Hue Motion Sensor ver 0.2.3
+-- Copyright 2021-2023 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -34,8 +34,9 @@ end
 
 local function set_sensitivity(device)
 	local sensitivityTable = {sensitivityLow = 0, sensitivityMedium = 1, sensitivityHigh = 2, sensitivityVeryHigh = 3, sensitivityMax = 4}
+	local motionSensitivity = device.preferences.motionSensitivityAvoidSTError or device.preferences.motionSensitivity
 	device:send(cluster_base.write_manufacturer_specific_attribute(device, clusters.OccupancySensing.ID, 0x0030, 0x100b,
-		data_types.Uint8, sensitivityTable[device.preferences.motionSensitivity]))
+		data_types.Uint8, sensitivityTable[motionSensitivity]))
 end
 
 local function do_configure(self, device)
@@ -44,7 +45,7 @@ local function do_configure(self, device)
 end
 
 local function device_info_changed(driver, device, event, args)
-	if args.old_st_store.preferences.motionSensitivity ~= device.preferences.motionSensitivity then
+	if args.old_st_store.preferences.motionSensitivityAvoidSTError ~= device.preferences.motionSensitivityAvoidSTError or args.old_st_store.preferences.motionSensitivity ~= device.preferences.motionSensitivity then
 		set_sensitivity(device)
 	end
 end
