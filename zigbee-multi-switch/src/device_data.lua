@@ -22,7 +22,6 @@ device_data.endpoints = {
 	["_TZE200_2hf7x9n3/TS0601"] = {1,2,3},
 	["_TZE200_bynnczcb/TS0601"] = {1,2,3},
 	["_TZE200_atpwqgml/TS0601"] = {1,2,3},
-	
 	["_TZE200_wunufsil/TS0601"] = {1,2,3,4},
 	["_TZE200_vhy3iakz/TS0601"] = {1,2,3,4},
 	["_TZE200_oisqyl4o/TS0601"] = {1,2,3,4},
@@ -35,9 +34,13 @@ device_data.endpoints = {
 	["_TZE200_atpwqgml/TS0601"] = {1,2,3,4},
 	["_TZE200_atpwqgml/TS0601"] = {1,2,3,4},
 	["_TZE200_jwsjbxjs/TS0601"] = {1,2,3,4,5},
+	["_TZE200_leaqthqq/TS0601"] = {1,2,3,4,5},
 	["_TZE200_1n2kyphz/TS0601"] = {1,2,3,4,5,6},
 	["_TZE200_9mahtqtg/TS0601"] = {1,2,3,4,5,6},
 	["_TZE200_r731zlxk/TS0601"] = {1,2,3,4,5,6},
+	["_TZE200_mwvfvw8g/TS0601"] = {1,2,3,4,5,6},
+	["_TZE200_vmcgja59/TS0601"] = {1,2,3,4,5,6,101,102},
+	["_TZE200_dqolcpcp/TS0601"] = {1,2,3,4,5,6,101,102,103,104,105,106},
 }
 
 device_data.is_polling_manufacturer = {

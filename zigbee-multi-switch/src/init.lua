@@ -132,7 +132,9 @@ local function get_ep_array(device)
 
   if device.preferences.forceChild > 0 then
     ep_array = {}
-    for i = 1, device.preferences.forceChild do ep_array[i] = i end  -- assuming ep# from 1 to 'forceChild'
+    for i = 1, device.preferences.forceChild do  -- assuming ep# from 1 to 'forceChild'
+      ep_array[i] = (is_tuya_mcu_switch(device) and i > 6) and (i + 94) or i
+    end
     return ep_array
   end
   
