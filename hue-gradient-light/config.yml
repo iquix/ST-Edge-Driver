@@ -1,0 +1,4 @@
+name: 'Hue Gradient Light'
+packageKey: 'hue-gradient-light'
+permissions:
+  zigbee: {}
