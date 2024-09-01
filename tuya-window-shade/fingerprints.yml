@@ -209,9 +209,12 @@ zigbeeManufacturer:
 
 
 
-# This driver can be applied to any zigbee devices, but never used for pairing.
-zigbeeThing :
-  - id: ZigbeeThing
+# This driver can be applied to any zigbee devices with cluster EF00, but never used for pairing.
+zigbeeGeneric:
+  - id: genericTuya
     deviceLabel: "Tuya Window Shade (Not Tested)"
+    clusters:
+      server:
+        - 0xEF00 # tuya
     deviceProfileName: tuya-window-shade
     isJoinable: false
