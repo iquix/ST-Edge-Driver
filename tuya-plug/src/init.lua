@@ -1,5 +1,5 @@
--- tuya Plug ver 0.1.1
--- Copyright 2022 Jaewon Park (iquix)
+-- tuya Plug ver 0.1.2
+-- Copyright 2022-2024 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ local zcl_types = require "st.zigbee.zcl.types"
 local ZigbeeDriver = require "st.zigbee"
 local constants = require "st.zigbee.constants"
 local defaults = require "st.zigbee.defaults"
+local switch_defaults = require "st.zigbee.defaults.switch_defaults"
 local device_management = require "st.zigbee.device_management"
 local log = require "log"
 
@@ -119,6 +120,14 @@ local function application_version_attr_handler(driver, device, value, zb_rx)
   setup_power_polling(device)
 end
 
+local function on_off_attr_handler(driver, device, value, zb_rx)
+  if is_polling(device) then
+    power_polling_timer = device.thread:call_with_delay(5, function(d)
+      power_refresh(device)
+    end)
+  end
+  switch_defaults.on_off_attr_handler(driver, device, value, zb_rx)
+end
 
 ---------------------------------------------------------------------
 
@@ -183,17 +192,20 @@ local tuya_plug = {
       },
       [SimpleMetering.ID] = {
         [SimpleMetering.attributes.CurrentSummationDelivered.ID] = energy_meter_handler
-	  },
+      },
+      [OnOff.ID] = {
+        [OnOff.attributes.OnOff.ID] = on_off_attr_handler,
+      },
     }
   },
   lifecycle_handlers = {
     added = device_added,
     init = device_init,
     doConfigure = do_configure,
-    infoChanged = device_info_changed,	
+    infoChanged = device_info_changed,
   }
 }
 
-defaults.register_for_default_handlers(tuya_plug, tuya_plug.supported_capabilities)
+defaults.register_for_default_handlers(tuya_plug, tuya_plug.supported_capabilities, {native_capability_cmds_enabled = true})
 local zigbee_driver = ZigbeeDriver("tuya-plug", tuya_plug)
 zigbee_driver:run()
