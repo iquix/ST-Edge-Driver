@@ -1,4 +1,4 @@
--- Hue Dimmer Switch ver 0.2.0
+-- Hue Dimmer Switch ver 0.3.0
 -- Copyright 2021 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,21 +29,31 @@ local button_handler = function(driver, device, zb_rx)
 	local buttonState = string.byte(rx:sub(5,5))
 	local buttonHoldTime = string.byte(rx:sub(7,7))
 	
-	local pushed_ev = capabilities.button.button.pushed()
-	local held_ev = capabilities.button.button.held()
-	pushed_ev.state_change = true
-	held_ev.state_change = true
+	local pushed_ev = capabilities.button.button.pushed({state_change = true})
+	local held_ev = capabilities.button.button.held({state_change = true})
+	local up_ev = capabilities.button.button.up_hold({state_change = true})
+	local down_ev = capabilities.button.button.down_hold({state_change = true})
 	
-	if buttonState == 2 then
+	if buttonState == 2 then  -- pushed
 		device.profile.components[comp[button]]:emit_event(pushed_ev)
 		device:emit_event(pushed_ev)
-	elseif (buttonState == 3 and device.preferences.holdTimingValue == "h1") then
-		device.profile.components[comp[button]]:emit_event(held_ev)
-		device:emit_event(held_ev)
-	elseif (buttonHoldTime == 8 and device.preferences.holdTimingValue ~= "h1") then
-		device.profile.components[comp[button]]:emit_event(held_ev)
-		device:emit_event(held_ev)
-	elseif (buttonHoldTime > 8 and device.preferences.holdTimingValue == "h2") then
+	elseif buttonState == 3 then  -- up
+		if device.preferences.holdTimingValue == "h1" then
+			device.profile.components[comp[button]]:emit_event(held_ev)
+			device:emit_event(held_ev)
+		elseif device.preferences.holdTimingValue == "h3" then
+			device.profile.components[comp[button]]:emit_event(up_ev)
+			device:emit_event(up_ev)
+		end
+	elseif buttonHoldTime == 8 then  -- hold down starts
+		if device.preferences.holdTimingValue == "h0" or device.preferences.holdTimingValue == "h2" then
+			device.profile.components[comp[button]]:emit_event(held_ev)
+			device:emit_event(held_ev)
+		elseif device.preferences.holdTimingValue == "h3" then
+			device.profile.components[comp[button]]:emit_event(down_ev)
+			device:emit_event(down_ev)
+		end
+	elseif (buttonHoldTime > 8 and device.preferences.holdTimingValue == "h2") then  -- hold down continues
 		device.profile.components[comp[button]]:emit_event(held_ev)
 		device:emit_event(held_ev)
 	end
@@ -61,12 +71,12 @@ local set_sw_type = function(device)
 end
 
 local device_added = function(driver, device)
-	device:emit_event(capabilities.button.supportedButtonValues({"pushed", "held"}))
+	device:emit_event(capabilities.button.supportedButtonValues({"pushed", "held", "up_hold", "down_hold"}))
 	device:emit_event(capabilities.button.button.pushed())
 	local n_button = is_wall_switch(device) and 2 or 4
 	for i = 1, n_button, 1 do
-		device.profile.components[comp[i]]:emit_event(capabilities.button.supportedButtonValues({"pushed", "held"}))
-		device.profile.components[comp[i]]:emit_event(capabilities.button.button.pushed())
+		device.profile.components[comp[i]]:emit_event(capabilities.button.supportedButtonValues({"pushed", "held", "up_hold", "down_hold"}))
+		device.profile.components[comp[i]]:emit_event(capabilities.button.button.pushed({state_change = false}))
 	end
 	if is_wall_switch(device) then
 		set_sw_type(device)
@@ -98,6 +108,18 @@ local hue_dimmer_driver = {
 				[0x00] = button_handler
 			}
 		},
+	},
+	cluster_configurations = {
+		[capabilities.battery.ID] = {
+			{
+				cluster = clusters.PowerConfiguration.ID,
+				attribute = clusters.PowerConfiguration.attributes.BatteryPercentageRemaining.ID,
+				minimum_interval = 800,
+				maximum_interval = 900,
+				data_type = clusters.PowerConfiguration.attributes.BatteryPercentageRemaining.base_type,
+				reportable_change = 2
+			}
+		}
 	},
 	lifecycle_handlers = {
 		added = device_added,
