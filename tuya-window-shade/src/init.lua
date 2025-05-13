@@ -1,5 +1,5 @@
--- Tuya Window Shade ver 0.5.0
--- Copyright 2021-2022 Jaewon Park (iquix) / SmartThings
+-- Tuya Window Shade ver 0.6.0
+-- Copyright 2021-2025 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@ local messages = require "st.zigbee.messages"
 local data_types = require "st.zigbee.data_types"
 local zb_const = require "st.zigbee.constants"
 local generic_body = require "st.zigbee.generic_body"
+local read_attribute = require "st.zigbee.zcl.global_commands.read_attribute"
+local device_management = require "st.zigbee.device_management"
+local clusters = require "st.zigbee.zcl.clusters"
+local Basic = clusters.Basic
 local window_preset_defaults = require "st.zigbee.defaults.windowShadePreset_defaults"
 local log = require "log"
 
@@ -27,8 +31,15 @@ local log = require "log"
 ---------- Constant Definitions ----------
 
 
-local CLUSTER_TUYA = 0xEF00
-local SET_DATA = 0x00
+local CLUSTER_TUYA = {
+  ID = 0xEF00,
+  commands = {
+    TY_DATA_REQUEST = 0x00,
+    TY_DATA_RESPONSE = 0x01,
+    TY_DATA_REPORT = 0x02,
+    TY_DATA_QUERY = 0x03
+  }
+}
 local DP_TYPE_VALUE = "\x02"
 local DP_TYPE_ENUM = "\x04"
 
@@ -38,22 +49,23 @@ local LEVEL_CMD_VAL = "levelCmdVal"
 local PARAMS = "params"
 
 
----------- send Tuya Command Function ----------
+---------- Tuya Packet Functions ----------
 
 
 local function send_tuya_command(device, dp, dp_type, fncmd) 
   local header_args = {
-    cmd = data_types.ZCLCommandId(SET_DATA)
+    cmd = data_types.ZCLCommandId(CLUSTER_TUYA.commands.TY_DATA_REQUEST)
   }
   local zclh = zcl_messages.ZclHeader(header_args)
   zclh.frame_ctrl:set_cluster_specific()
+  zclh.frame_ctrl:set_disable_default_response()
   local addrh = messages.AddressHeader(
     zb_const.HUB.ADDR,
     zb_const.HUB.ENDPOINT,
     device:get_short_address(),
-    device:get_endpoint(CLUSTER_TUYA),
+    device:get_endpoint(CLUSTER_TUYA.ID),
     zb_const.HA_PROFILE_ID,
-    CLUSTER_TUYA
+    CLUSTER_TUYA.ID
   )
   packet_id = (packet_id + 1) % 65536
   local fncmd_len = string.len(fncmd)
@@ -65,6 +77,28 @@ local function send_tuya_command(device, dp, dp_type, fncmd)
   local send_message = messages.ZigbeeMessageTx({
     address_header = addrh,
     body = message_body
+  })
+  device:send(send_message)
+end
+
+local function configure_tuya_magic_packet(device)
+  local zclh = zcl_messages.ZclHeader({cmd = data_types.ZCLCommandId(read_attribute.ReadAttribute.ID)})
+  local addrh = messages.AddressHeader(
+    zb_const.HUB.ADDR,
+    zb_const.HUB.ENDPOINT,
+    device:get_short_address(),
+    device:get_endpoint(Basic.ID),
+    zb_const.HA_PROFILE_ID,
+    Basic.ID
+  )
+  local payload_body = read_attribute.ReadAttribute( {0x0004, 0x0000, 0x0001, 0x0005, 0x0007,0xFFFE} )
+  local message_body = zcl_messages.ZclMessageBody({
+    zcl_header = zclh,
+    zcl_body = payload_body
+  })
+  local send_message = messages.ZigbeeMessageTx({
+      address_header = addrh,
+      body = message_body
   })
   device:send(send_message)
 end
@@ -205,7 +239,7 @@ local function set_event(device)
 end
 
 
----------- Command Handlers ----------
+---------- Zigbee Handlers ----------
 
 
 local function tuya_cluster_handler(driver, device, zb_rx)
@@ -257,6 +291,17 @@ local function tuya_cluster_handler(driver, device, zb_rx)
     end
   end
 end
+
+local function basic_power_source_handler(driver, device, value, zb_rx)
+  if value.value == Basic.attributes.PowerSource.SINGLE_PHASE_MAINS then    -- only make periodic reporting for mains powered devices to prevent battery drain
+    -- configure ApplicationVersion to keep device online
+    device:send(Basic.attributes.ApplicationVersion:configure_reporting(device, 30, 300, 1))
+  end
+end
+
+
+---------- Command Handlers ----------
+
 
 local function window_shade_open_handler(driver, device)
   local current_level = get_current_level(device)
@@ -316,14 +361,20 @@ end
 ---------- Lifecycle Handlers ----------
 
 
+local function do_configure(driver, device)
+  device:send(device_management.build_bind_request(device, Basic.ID, driver.environment_info.hub_zigbee_eui))
+  configure_tuya_magic_packet(device)
+end
+
 local function device_added(driver, device)
-  device:emit_event(capabilities.windowShade.supportedWindowShadeCommands({"open", "close", "pause"}))
+  device:emit_event(capabilities.windowShade.supportedWindowShadeCommands({"open", "close", "pause"}, {visibility = {displayed = false}}))
   if get_current_level(device) == nil then
     set_event(device)
     device.thread:call_with_delay(3, function(d)
       window_shade_level_set_shade_level_handler(driver, device, {args = { shadeLevel = 50 }}) -- move to 50% position
     end)
   end
+  do_configure(driver, device)
 end
 
 local function device_init(driver, device)
@@ -355,9 +406,14 @@ local tuya_window_shade_driver = {
   },
   zigbee_handlers = {
     cluster = {
-      [CLUSTER_TUYA] = {
-        [0x01] = tuya_cluster_handler,
-        [0x02] = tuya_cluster_handler
+      [CLUSTER_TUYA.ID] = {
+        [CLUSTER_TUYA.commands.TY_DATA_RESPONSE] = tuya_cluster_handler,
+        [CLUSTER_TUYA.commands.TY_DATA_REPORT] = tuya_cluster_handler
+      }
+    },
+    attr = {
+      [Basic.ID] = {
+        [Basic.attributes.PowerSource.ID] = basic_power_source_handler
       }
     }
   },
@@ -380,7 +436,8 @@ local tuya_window_shade_driver = {
   lifecycle_handlers = {
     added = device_added,
     init = device_init,
-    infoChanged = device_info_changed
+    infoChanged = device_info_changed,
+    doConfigure = do_configure
   }
 }
 
