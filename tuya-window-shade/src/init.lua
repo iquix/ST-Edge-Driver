@@ -1,4 +1,4 @@
--- Tuya Window Shade ver 0.6.0
+-- Tuya Window Shade ver 0.6.1
 -- Copyright 2021-2025 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,11 +104,46 @@ local function configure_tuya_magic_packet(device)
 end
 
 
+---------- Advanced Parameters Functions ----------
+
+
+local function parse_params(device)
+  local params = {}
+  local s = device.preferences.advancedParams
+  if s ~= nil then
+    s = s:lower():gsub("%s", "")
+    for k, v in string.gmatch(s, "([^,=?]+)=([^,=?]+)") do  -- comma separated
+      if v == "true" then
+        v = true
+      elseif v == "false" then
+        v = false
+      elseif tonumber(v) ~= nil then
+        v = tonumber(v)
+      end
+      params[k] = v
+    end
+  end
+  device:set_field(PARAMS, params)
+end
+
+local function get_params(device)
+  local params = device:get_field(PARAMS)
+  return (params == nil) and {} or params
+end
+
+
 ---------- Product Category Functions ----------
 
 
+local unusual_models_list = {"ueqqe6k", "qcqqjpb", "f1sl3tj", "mymn92d", "owvfni3", "mcdj3aq"}
+
 local function product_id(device)
-  return string.sub(device:get_manufacturer(), -7)
+  local model = get_params(device).model
+  if model == nil or unusual_models_list[model] == nil then
+    return string.sub(device:get_manufacturer(), -7)
+  else
+    return unusual_models_list[model]
+  end
 end
 
 local function is_old_zemi_curtain(device)
@@ -133,34 +168,6 @@ end
 local function does_report_start_pos(device)
   local p = product_id(device)
   return (p == "f1sl3tj" or p == "mymn92d")
-end
-
-
----------- Parameter Functions ----------
-
-
-function parse_params(device)
-  local params = {}
-  local s = device.preferences.advancedParams
-  if s ~= nil then
-    s = s:lower():gsub("%s", "")
-    for k, v in string.gmatch(s, "([^,=?]+)=([^,=?]+)") do  -- comma separated
-      if v == "true" then
-        v = true
-      elseif v == "false" then
-        v = false
-      elseif tonumber(v) ~= nil then
-        v = tonumber(v)
-      end
-      params[k] = v
-    end
-  end
-  device:set_field(PARAMS, params)
-end
-
-function get_params(device)
-  local params = device:get_field(PARAMS)
-  return (params == nil) and {} or params
 end
 
 
