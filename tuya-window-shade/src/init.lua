@@ -323,13 +323,13 @@ local function window_shade_close_handler(driver, device)
   if current_level == 0 then
     device:emit_event(capabilities.windowShade.windowShade.closed())
   end
-  send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x02")
+  send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x01")
 end
 
 local function window_shade_pause_handler(driver, device)
   local window_shade_val = device:get_latest_state("main", capabilities.windowShade.ID, capabilities.windowShade.windowShade.NAME)
   device:emit_event(capabilities.windowShade.windowShade(window_shade_val))
-  send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x01")
+  send_tuya_command(device, "\x01", DP_TYPE_ENUM, "\x02")
 end
 
 local function window_shade_level_set_shade_level_handler(driver, device, command)
