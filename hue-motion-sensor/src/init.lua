@@ -91,7 +91,8 @@ local hue_motion_driver = {
 	lifecycle_handlers = {
 		infoChanged = device_info_changed,
 		doConfigure = do_configure
-	}
+	},
+	health_check = false
 }
 
 defaults.register_for_default_handlers(hue_motion_driver, hue_motion_driver.supported_capabilities)

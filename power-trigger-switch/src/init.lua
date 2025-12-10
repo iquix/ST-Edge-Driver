@@ -348,7 +348,8 @@ local power_trigger_switch = {
     infoChanged = device_info_changed,
     driverSwitched = do_configure,
     doConfigure = do_configure
-  }
+  },
+  health_check = false
 }
 
 defaults.register_for_default_handlers(power_trigger_switch, power_trigger_switch.supported_capabilities)

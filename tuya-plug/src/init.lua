@@ -203,7 +203,8 @@ local tuya_plug = {
     init = device_init,
     doConfigure = do_configure,
     infoChanged = device_info_changed,
-  }
+  },
+  health_check = false
 }
 
 defaults.register_for_default_handlers(tuya_plug, tuya_plug.supported_capabilities, {native_capability_cmds_enabled = true})

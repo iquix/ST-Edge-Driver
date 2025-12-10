@@ -309,6 +309,7 @@ local zigbee_switch_driver = {
     infoChanged = device_info_changed,
     doConfigure = do_configure
   },
+  health_check = false
 }
 
 local zigbee_driver = ZigbeeDriver("zigbee-multi-switch", zigbee_switch_driver)

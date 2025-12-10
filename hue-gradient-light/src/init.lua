@@ -143,7 +143,8 @@ local zigbee_driver_template = {
   lifecycle_handlers = {
     doConfigure = do_configure,
     added = device_added
-  }
+  },
+  health_check = false
 }
 
 defaults.register_for_default_handlers(zigbee_driver_template,
