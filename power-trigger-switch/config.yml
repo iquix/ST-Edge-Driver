@@ -1,0 +1,4 @@
+name: 'Power Trigger Switch'
+packageKey: 'power-trigger-switch'
+permissions:
+  zigbee: {}

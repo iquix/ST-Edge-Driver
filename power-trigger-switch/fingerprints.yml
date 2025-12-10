@@ -1,0 +1,69 @@
+zigbeeManufacturer:
+  - id: "DAWON_DNS/PM-B430-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-B430-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-B530-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-B530-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-C140-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-C140-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-B540-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-B540-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/ST-B550-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: ST-B550-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-C150-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-C150-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-C250-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-C250-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "DAWON_DNS/PM-B440-ZB"
+    deviceLabel: "Power Trigger Switch (Dawon)"
+    manufacturer: DAWON_DNS
+    model: PM-B440-ZB
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+
+  - id: "Heiman/SmartPlug"
+    deviceLabel: "Power Trigger Switch (Heiman)"
+    manufacturer: Heiman
+    model: SmartPlug
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+
+  - id: "TUYA/TS011F"
+    deviceLabel: "Power Trigger Switch (Tuya)"
+    model: TS011F
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+  - id: "TUYA/TS0121"
+    deviceLabel: "Power Trigger Switch (Tuya)"
+    model: TS0121
+    deviceProfileName: power-trigger-switch-cfg
+    isJoinable: false
+
+# Raw Description 01 0104 0051 01 06 0000 0002 0003 0006 0702 0B04 02 0003 0019

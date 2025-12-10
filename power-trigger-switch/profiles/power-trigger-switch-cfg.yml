@@ -1,0 +1,77 @@
+name: power-trigger-switch-cfg
+components:
+  - id: main
+    capabilities:
+      - id: switch
+        version: 1
+      - id: powerMeter
+        version: 1
+      - id: energyMeter
+        version: 1
+      - id: powerConsumptionReport
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: SmartPlug
+  - id: onButton
+    label: "On Button"
+    capabilities:
+      - id: button
+        version: 1
+    categories:
+      - name: RemoteController
+  - id: offButton
+    label: "Off Button"
+    capabilities:
+      - id: button
+        version: 1
+    categories:
+      - name: RemoteController
+preferences:
+  - name: onThreshold
+    title: "On Threshold Power (W)"
+    required: true
+    preferenceType: integer
+    definition:
+      default: 15
+  - name: onDuration
+    title: "On Threshold Duration (sec)"
+    required: true
+    preferenceType: integer
+    definition:
+      default: 15
+  - name: offThreshold
+    title: "Off Threshold Power (W)"
+    required: true
+    preferenceType: integer
+    definition:
+      default: 1
+  - name: offDuration
+    title: "Off Threshold Duration (sec)"
+    required: true
+    preferenceType: integer
+    definition:
+      default: 5
+  - name: forceTurnOn
+    title: "Force turn on plug when it's off"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - name: powerPolling
+    title: "Power Polling Preference"
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        p0: "Automatic (default)"
+        p1: "Force Enable Power Polling"
+        p2: "Force disable Power Polling"
+      default: p0
+  - name: steMode
+    title: "ST Energy mode(limited automation)"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
