@@ -4,18 +4,26 @@ components:
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: button2
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: button3
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: button4
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: main
   capabilities:
   - id: battery
@@ -25,9 +33,8 @@ components:
   categories:
   - name: RemoteController
 metadata:
-  vid: generic-4-button
-  mnmn: SmartThings
-  ocfDeviceType: x.com.st.d.remotecontroller
+  vid: 7d0d3a06-6031-3105-b8b5-4ab0339f56c7
+  mnmn: SmartThingsCommunity
 preferences:
   - name: holdTimingValue
     title: "Held Event Firing Timing"
@@ -38,4 +45,35 @@ preferences:
         h0: "When Holding Starts"
         h1: "When Holding Ends"
         h2: "Fire Multiple Events while Holding"
+        h3: "Fire Down_hold/Up_hold events"
       default: "h0"
+  - name: groupId
+    title: "Group# to bind/unbind"
+    description: "Type Zigbee Group number to bind/unbind (decimal) (0: do nothing)"
+    required: true
+    preferenceType: integer
+    definition:
+      default: 0
+      minimum: 0
+      maximum: 65535
+  - name: bindGroup
+    title: "Toggle to bind device to group"
+    description: "Turn off and turn back ON to bind this device's OnOff and Level cluster to the Group# specified above. Press device's physical button right after to take effect."
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - name: unbindGroup
+    title: "Toggle to unbind device from group"
+    description: "Turn off and turn back ON to unbind this device's OnOff and Level cluster from the Group# specified above. Press device's physical button right after to take effect."
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - name: queryBindTable
+    title: "Toggle to query bind table to hublog"
+    description: "Turn off and turn back ON to query binding table of this device. See results from hublog with SmartThings CLI. Press device's physical button right after to query."
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true

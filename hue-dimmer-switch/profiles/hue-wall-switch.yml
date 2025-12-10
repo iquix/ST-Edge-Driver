@@ -4,10 +4,14 @@ components:
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: button2
   capabilities:
   - id: button
     version: 1
+  categories:
+    - name: RemoteController
 - id: main
   capabilities:
   - id: battery
@@ -17,9 +21,8 @@ components:
   categories:
   - name: RemoteController
 metadata:
-  vid: generic-2-button
-  mnmn: SmartThings
-  ocfDeviceType: x.com.st.d.remotecontroller
+  vid: 964f4199-c407-3d7d-9db5-ac9d23d8da6c
+  mnmn: SmartThingsCommunity
 preferences:
   - name: holdTimingValue
     title: "Held Event Firing Timing"
@@ -30,6 +33,7 @@ preferences:
         h0: "When Holding Starts"
         h1: "When Holding Ends"
         h2: "Fire Multiple Events while Holding"
+        h3: "Fire Down_hold/Up_hold events"
       default: "h0"
   - name: swTypeValue
     title: "Switch Type"
