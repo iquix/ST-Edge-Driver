@@ -1,4 +1,4 @@
--- Tuya Window Shade ver 0.6.1
+-- Tuya Window Shade ver 0.6.2
 -- Copyright 2021-2025 Jaewon Park (iquix) / SmartThings
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -445,7 +445,8 @@ local tuya_window_shade_driver = {
     init = device_init,
     infoChanged = device_info_changed,
     doConfigure = do_configure
-  }
+  },
+  health_check = false
 }
 
 local zigbee_driver = ZigbeeDriver("tuya-window-shade", tuya_window_shade_driver)
