@@ -1,6 +1,6 @@
 
--- Galaxy Home Music Switch ver 0.1.0
--- Copyright 2021-2022 Jaewon Park (iquix)
+-- Galaxy Home Music Switch ver 0.2.0
+-- Copyright 2021-2026 Jaewon Park (iquix)
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ local discovery = require "discovery"
 -----------------------------------------------------------------
 
 function switch_off_handler(driver, device, command)
+  log.info(send(device, "?stop"))
   device:emit_event(capabilities.switch.switch.off())
 end
 
@@ -44,7 +45,7 @@ function switch_on_handler(driver, device, command)
   end
   device:emit_event(capabilities.switch.switch.on())
   device.thread:call_with_delay(3, function(d)
-    switch_off_handler(driver, device, command)
+    device:emit_event(capabilities.switch.switch.off())
   end)
 end
 
@@ -76,32 +77,37 @@ end
 -----------------------------------------------------------------
 
 function send(device, s)
+  local urn = "urn:schemas-upnp-org:service:AVTransport:1"
   local action
-  local data
+  local args
   local res_body = {}
-
+  
   if s == "?play" then
-    action = "\"urn:schemas-upnp-org:service:AVTransport:1#Play\""
-    data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><u:Play xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\"><InstanceID>0</InstanceID><Speed>1</Speed></u:Play></s:Body></s:Envelope>"
+    action = "Play"
+    args = "<InstanceID>0</InstanceID><Speed>1</Speed>"
+  elseif s == "?stop" then
+    action = "Stop"
+    args = "<InstanceID>0</InstanceID>"
   else
-    action = "\"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI\""
-    data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><u:SetAVTransportURI xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\"><InstanceID>0</InstanceID><CurrentURI>"..s.."</CurrentURI><CurrentURIMetaData></CurrentURIMetaData></u:SetAVTransportURI></s:Body></s:Envelope>"
-	end
-
-  -- HTTP Request
+    action = "SetAVTransportURI"
+    args = "<InstanceID>0</InstanceID><CurrentURI>"..s.."</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>"
+  end
+  
+  local data = '<?xml version="1.0" encoding="utf-8"?><s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><u:'..action..' xmlns:u="'..urn..'">'..args..'</u:'..action..'></s:Body></s:Envelope>'
+  
   local _, code = http.request({
-    method="POST",
-    url="http://"..device.preferences.ipAddress..":9197/upnp/control/AVTransport1",
-    sink=ltn12.sink.table(res_body),
+    method = "POST",
+    url = "http://"..device.preferences.ipAddress..":9197/upnp/control/AVTransport1",
+    sink = ltn12.sink.table(res_body),
     source = ltn12.source.string(data),
-    headers={
+    headers = {
       ["HOST"] = device.preferences.ipAddress..":9197",
-      ["Content-Type"] = "text/xml; charset=utf-8",
-      ["SOAPAction"] = action,
+      ["Content-Type"] = "text/xml; charset=\"utf-8\"",
+      ["SOAPAction"] = '"' .. urn .. '#' .. action .. '"',
       ["Content-Length"] = #data
     }
   })
-
+  
   -- Handle response
   return code, table.concat(res_body)
 end
