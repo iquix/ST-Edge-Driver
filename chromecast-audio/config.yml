@@ -1,0 +1,5 @@
+name: 'Chromecast Audio'
+packageKey: 'chromecast-audio'
+permissions:
+  lan: {}
+  discovery: {}

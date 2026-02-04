@@ -1,0 +1,15 @@
+name: chromecast-music-switch
+components:
+- id: main
+  capabilities:
+  - id: switch
+    version: 1
+preferences:
+  - title: "Media URI"
+    name: mediaUri
+    description: "Media URI"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: "http://"

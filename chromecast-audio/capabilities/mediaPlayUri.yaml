@@ -1,0 +1,19 @@
+id: iquix.mediaPlayUri
+version: 1
+name: Media Play URI
+attributes: {}
+commands:
+  play:
+    name: play
+    arguments:
+      - name: uri
+        optional: false
+        schema:
+          type: string
+  playNotification:
+    name: playNotification
+    arguments:
+      - name: uri
+        optional: false
+        schema:
+          type: string

@@ -1,0 +1,2 @@
+mdns:
+  - service: "_googlecast._tcp"

@@ -1,0 +1,110 @@
+name: chromecast-audio
+components:
+- id: main
+  capabilities:
+  - id: switch
+    version: 1
+  - id: mediaPlayback
+    version: 1
+  - id: mediaTrackControl
+    version: 1
+  - id: audioTrackData 
+    version: 1
+  - id: audioVolume
+    version: 1
+  - id: audioMute
+    version: 1
+  - id: audioNotification
+    version: 1
+  - id: iquix.mediaPlayUri
+    version: 1
+  categories:
+    - name: Speaker
+preferences:
+  - title: "Audio Notification Volume"
+    name: audioNotiVolume
+    description: "While Audio Notification, the volume will be set to the specified value(1-100) then resume to the original volume. (0: Use original volume while Audio Notification)"
+    required: true
+    preferenceType: number
+    definition:
+      default: 0
+      minimum: 0
+      maximum: 100
+  - title: "Create Virtual Child Switch"
+    name: createDev
+    description: "Turn off and turn back ON to create a virtual child switch that plays specified media"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+deviceConfig:
+  dashboard:
+    states:
+      - component: main
+        capability: mediaPlayback
+        version: 1
+    actions:
+      - component: main
+        capability: mediaPlayback
+        version: 1
+  detailView:
+    - component: main
+      capability: switch
+      version: 1
+    - component: main
+      capability: mediaPlayback
+      version: 1
+    - component: main
+      capability: mediaTrackControl
+      version: 1
+    - component: main
+      capability: audioTrackData
+      version: 1
+    - component: main
+      capability: audioVolume
+      version: 1
+    - component: main
+      capability: audioMute
+      version: 1
+    - component: main
+      capability: audioNotification
+      version: 1
+  automation:
+    conditions:
+      - component: main
+        capability: switch
+        version: 1
+      - component: main
+        capability: mediaPlayback
+        version: 1
+      - component: main
+        capability: audioTrackData
+        version: 1
+      - component: main
+        capability: audioVolume
+        version: 1
+      - component: main
+        capability: audioMute
+        version: 1
+    actions:
+      - component: main
+        capability: switch
+        version: 1
+      - component: main
+        capability: mediaPlayback
+        version: 1
+      - component: main
+        capability: mediaTrackControl
+        version: 1
+      - component: main
+        capability: audioVolume
+        version: 1
+      - component: main
+        capability: audioMute
+        version: 1
+      - component: main
+        capability: audioNotification
+        version: 1
+      - component: main
+        capability: iquix.mediaPlayUri
+        version: 1
