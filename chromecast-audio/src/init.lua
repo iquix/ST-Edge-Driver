@@ -13,7 +13,10 @@ local discovery = require "disco"
 local cast = require "chromecast"
 
 local send_command = cast.send_command  -- Local alias for frequently used module function
-local device_task  -- Forward declaration of device_task function
+
+-- Forward declaration of functions
+local device_task  
+local load_media
 
 -- Configuration Constants
 local PING_INTERVAL       = 5    -- Heartbeat interval (seconds)
@@ -167,11 +170,17 @@ local function handle_receiver_status(device, result)
 
     -- Update app state
     if result.app then
-        local active_app = device:get_field("active_app") or {}
-        if active_app.transport_id ~= result.app.transport_id then
-            log.info(string.format("[App] Found App: %s, TransportId: %s", result.app.app_name, result.app.transport_id))
-        end
+        local prev_active_app = device:get_field("active_app") or {}
         device:set_field("active_app", result.app)
+        if prev_active_app.transport_id ~= result.app.transport_id then
+            log.info(string.format("[App] Found App: %s, TransportId: %s", result.app.app_name, result.app.transport_id))
+            -- After Default Media Receiver is launched, load media when there's media to load.
+            local media_to_load = device:get_field("media_to_load")
+            if result.app.app_id == cast.APP_ID and media_to_load then
+                device:set_field("media_to_load", nil)
+                load_media(device, media_to_load.uri, media_to_load.volume, media_to_load.muted)
+            end
+        end
         device:emit_event(capabilities.switch.switch.on())
     else
         log.info("No active app found in RECEIVER_STATUS")
@@ -359,43 +368,32 @@ local function create_music_switch(driver, device)
     driver:try_create_device(metadata)
 end
 
+-- Helper: Load media assuming default receiver is already loaded
+load_media = function(device, uri, volume, muted)
+    if volume then
+        log.info(string.format("[Volume] Setting notification - volume: %d", volume))
+        queue_command(device, cast.set_volume(volume))
+    end
+    if muted == false then
+        log.info("[Volume] Unmuting for notification")
+        queue_command(device, cast.set_volume_muted(false))
+    end
+    queue_command(device, cast.media_load(uri))
+end
+
 -- Helper: Play media using default receiver
 local function play_media(device, uri, volume, muted)
     if not uri or uri == "" or uri == "http://" then return false end
-    -- Launch Default Media Receiver app if not already running
+    -- Load media after launching Default Media Receiver app if not already launched
     local active_app = device:get_field("active_app") or {}
     local is_default_media_receiver_running = active_app.app_id == cast.APP_ID and active_app.transport_id
-    if not is_default_media_receiver_running then
+    if is_default_media_receiver_running then
+        load_media(device, uri, volume, muted)
+    else
         queue_command(device, cast.launch_app())
         device:set_field("active_app", {})
+        device:set_field("media_to_load", {uri = uri, volume = volume, muted = muted})
     end
-
-    -- Poll for transport_id and send LOAD when ready
-    local attempts = 0
-    local max_attempts = 10
-    local function try_load()
-        attempts = attempts + 1
-        if (device:get_field("active_app") or {}).transport_id then
-            if volume then
-                log.info(string.format("[Volume] Setting notification - volume: %d", volume))
-                queue_command(device, cast.set_volume(volume))
-            end
-
-            if muted == false then
-                log.info("[Volume] Unmuting for notification")
-                queue_command(device, cast.set_volume_muted(false))
-            end
-
-            queue_command(device, cast.media_load(uri))
-        elseif attempts < max_attempts then
-            device.thread:call_with_delay(0.5, try_load)
-        else
-            log.warn("[play_media] Failed to get transport_id after " .. max_attempts .. " attempts")
-        end
-    end
-
-    try_load()
-    return true
 end
 
 -- === Capability Handlers ===
