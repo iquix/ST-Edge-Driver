@@ -25,6 +25,7 @@ local device_management = require "st.zigbee.device_management"
 local clusters = require "st.zigbee.zcl.clusters"
 local Basic = clusters.Basic
 local window_preset_defaults = require "st.zigbee.defaults.windowShadePreset_defaults"
+local utils = require "st.utils"
 local log = require "log"
 
 
@@ -364,6 +365,15 @@ local function window_shade_preset_preset_position_handler(driver, device)
   window_shade_level_set_shade_level_handler(driver, device, {args = { shadeLevel = level }})
 end
 
+local function stateless_switch_level_step_step_level_handler(driver, device, command)
+  local step = command.args.stepSize
+  local current_level = get_current_level(device)
+  local target_level = utils.round(utils.clamp_value(current_level + step, 0, 100))
+  window_shade_level_set_shade_level_handler(driver, device, {args = { shadeLevel = target_level }})
+  device:emit_event(capabilities.windowShadeLevel.shadeLevel(target_level))
+  device:emit_event(capabilities.switchLevel.level(target_level))
+end
+
 
 ---------- Lifecycle Handlers ----------
 
@@ -438,6 +448,9 @@ local tuya_window_shade_driver = {
     },
     [capabilities.switchLevel.ID] = {
       [capabilities.switchLevel.commands.setLevel.NAME] = switch_level_set_level_handler
+    },
+    [capabilities.statelessSwitchLevelStep.ID] = {
+      [capabilities.statelessSwitchLevelStep.commands.stepLevel.NAME] = stateless_switch_level_step_step_level_handler
     }
   },
   lifecycle_handlers = {

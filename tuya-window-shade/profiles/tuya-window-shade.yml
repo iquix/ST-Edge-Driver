@@ -8,6 +8,8 @@ components:
     version: 1
   - id: switchLevel
     version: 1
+  - id: statelessSwitchLevelStep
+    version: 1
   - id: windowShadePreset
     version: 1
   categories:
@@ -37,3 +39,78 @@ preferences:
     definition:
       stringType: text
       default: ""
+deviceConfig:
+  dashboard:
+    states:
+      - component: main
+        capability: windowShade
+        version: 1
+        values: []
+        composite: true
+      - component: main
+        capability: windowShadeLevel
+        version: 1
+        values:
+          - label: ' | {{shadeLevel.value}} {{shadeLevel.unit}}'
+        composite: true
+        visibleCondition:
+          component: main
+          capability: windowShade
+          version: 1
+          value: windowShade.value
+          operator: EQUALS
+          operand: partially open
+          isOffline: false
+    actions:
+      - component: main
+        capability: windowShade
+        version: 1
+        inline: null
+    basicPlus:
+      - displayType: panel
+        panel:
+          items:
+            - component: main
+              capability: windowShadeLevel
+              version: 1
+              size: 4x2
+              values: []
+              visibleConditions: []
+          visibleConditions: []
+  detailView:
+    - component: main
+      capability: windowShade
+      version: 1
+    - component: main
+      capability: windowShadeLevel
+      version: 1
+    - component: main
+      capability: statelessSwitchLevelStep
+      version: 1
+    - component: main
+      capability: windowShadePreset
+      version: 1
+  automation:
+    conditions:
+      - component: main
+        capability: windowShade
+        version: 1
+      - component: main
+        capability: windowShadeLevel
+        version: 1
+      - component: main
+        capability: windowShadePreset
+        version: 1
+    actions:
+      - component: main
+        capability: windowShade
+        version: 1
+      - component: main
+        capability: windowShadeLevel
+        version: 1
+      - component: main
+        capability: statelessSwitchLevelStep
+        version: 1
+      - component: main
+        capability: windowShadePreset
+        version: 1
