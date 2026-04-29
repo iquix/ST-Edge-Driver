@@ -128,7 +128,8 @@ local function handle_media_status(device, result)
         device:emit_event(capabilities.mediaPlayback.playbackStatus.paused())
     elseif result.player_state == "IDLE" then
         if result.is_loading then
-            log.info("[Media] Loading media, with player state idle")
+            log.info("[Media] Loading media, with player state idle. Setting plabackStatus as buffering.")
+            device:emit_event(capabilities.mediaPlayback.playbackStatus.buffering())
         else
             device:emit_event(capabilities.mediaPlayback.playbackStatus.stopped())
             turn_off_child_switches(device)
