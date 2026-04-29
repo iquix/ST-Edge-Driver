@@ -11,6 +11,7 @@ local st_device = require "st.device"
 local log = require "log"
 local discovery = require "disco"
 local cast = require "chromecast"
+local tts = require "tts"
 
 local send_command = cast.send_command  -- Local alias for frequently used module function
 
@@ -405,7 +406,10 @@ local function play_media_handler(driver, device, command)
     local volume
     local muted
 
-    if command.command == "playTrackAndResume" or command.command == "playTrackAndRestore" or command.command == "playNotification" then
+    if command.command == "playTrackAndResume" or 
+       command.command == "playTrackAndRestore" or
+       command.command == "playNotification" or
+       command.command == "speak" then
         -- Set media type to notification
         device:set_field("media_type", "notification")
 
@@ -445,7 +449,6 @@ local function volume_down_handler(driver, device, command)
     local new_vol = current_vol - 5
     volume_set_handler(driver, device, { args = { volume = new_vol } })
 end
-
 local function mute_set_handler(driver, device, command)
     local state = command.args.state
     queue_command(device, cast.set_volume_muted(state == "muted"))
@@ -470,6 +473,19 @@ end
 
 local function media_stop_handler(driver, device, command)
     queue_command(device, cast.media_stop())
+end
+
+-- Speech Synthesis
+local function speak_handler(driver, device, command)
+    local phrase = command.args.phrase
+    if not phrase or phrase == "" then return end
+    local tts_url = tts.get_url(phrase, device.preferences.speakLanguage)
+    log.info("[SpeechSynthesis] Speaking: " .. phrase)
+    -- Delegate to play_media_handler
+    play_media_handler(driver, device, {
+        command = "speak",
+        args = { uri = tts_url, level = command.args.level }
+    })
 end
 
 -- Media Track Control
@@ -604,6 +620,10 @@ local chromecast_driver = Driver("chromecast-audio-driver", {
             [capabilities.audioNotification.commands.playTrack.NAME] = play_media_handler,
             [capabilities.audioNotification.commands.playTrackAndResume.NAME] = play_media_handler,
             [capabilities.audioNotification.commands.playTrackAndRestore.NAME] = play_media_handler,
+        },
+        -- Speech Synthesis
+        [capabilities.speechSynthesis.ID] = {
+            [capabilities.speechSynthesis.commands.speak.NAME] = speak_handler,
         },
         -- Volume & Mute
         [capabilities.audioVolume.ID] = {
