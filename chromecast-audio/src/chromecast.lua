@@ -279,6 +279,33 @@ local function check_capability(ca, flag)
     return (ca & flag) ~= 0
 end
 
+-- Helper: Map file extension to MIME type for Chromecast-supported formats
+local function extension_to_mime(uri)
+    local ext = uri:match("%.([^%.%?#]+)$")
+    if not ext then return nil end
+    ext = ext:lower()
+    local mime_map = {
+        -- Audio containers
+        mp3  = "audio/mp3",
+        mpa  = "audio/mpeg",
+        m4a  = "audio/mp4",
+        ogg  = "audio/ogg",
+        oga  = "audio/ogg",
+        opus = "audio/ogg",
+        wav  = "audio/wav",
+        flac = "audio/flac",
+        -- Video containers
+        mp4  = "video/mp4",
+        m4v  = "video/mp4",
+        webm = "video/webm",
+        ts   = "video/mp2t",
+        -- Adaptive streaming
+        m3u8 = "application/x-mpegurl",
+        mpd  = "application/dash+xml",
+    }
+    return mime_map[ext]         -- Returns the matching MIME type, or nil if the extension is not recognized
+end
+
 -- === Module functions: Connection and message handling ===
 
 -- Connect to Chromecast and perform initial protocol handshake
@@ -441,10 +468,10 @@ function M.media_stop()
 end
 
 -- @param uri: media URI
--- @param content_type: media content type (optional, default: "audio/mp3")
+-- @param content_type: media content type (optional, auto-detected from URI extension)
 -- @param stream_type: stream type (NONE/BUFFERED/LIVE) (optional, default: "BUFFERED")
 function M.media_load(uri, content_type, stream_type)
-    content_type = content_type or "audio/mp3"
+    content_type = content_type or extension_to_mime(uri) or "audio/mp3"
     stream_type = stream_type or "BUFFERED"
     return {
         dest = M.SENTINEL_TRANSPORT_ID,
