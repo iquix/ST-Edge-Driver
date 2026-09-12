@@ -25,6 +25,7 @@ local POLL_INTERVAL       = 180  -- Status polling interval (seconds)
 local SOCKET_TIMEOUT      = 5    -- Socket I/O timeout (seconds)
 local RECONNECT_DELAY     = 5    -- Initial reconnect delay (seconds)
 local MAX_RECONNECT_DELAY = 300  -- Maximum reconnect delay (seconds)
+local INACTIVITY_TIMEOUT  = 30   -- Socket inactivity timeout (seconds)
 
 
 -- === Helper Functions for Chromecast Command Channel ===
@@ -241,12 +242,14 @@ device_task = function(driver, device, task_token, rx_channel)
 
     local conn = nil
     local last_ping = socket.gettime()
+    local last_rx = socket.gettime()
     local last_poll = 0  -- Initialize to 0 so polling gets triggered immediately on connection
 
-    local ping_interval    = PING_INTERVAL
-    local poll_interval    = POLL_INTERVAL
-    local reconnect_delay  = RECONNECT_DELAY
-    local pending_msg      = nil
+    local ping_interval       = PING_INTERVAL
+    local poll_interval       = POLL_INTERVAL
+    local inactivity_timeout  = INACTIVITY_TIMEOUT
+    local reconnect_delay     = RECONNECT_DELAY
+    local pending_msg         = nil
 
     while true do
         -- Wrap entire iteration in pcall to handle device deletion gracefully
@@ -271,6 +274,7 @@ device_task = function(driver, device, task_token, rx_channel)
                 if conn then
                     conn:settimeout(SOCKET_TIMEOUT)
                     last_ping = socket.gettime()
+                    last_rx = socket.gettime()
                     device:set_field("active_app", {})  -- Reset active_app on new connection
                     device:online()
                     reconnect_delay = RECONNECT_DELAY  -- Reset backoff on successful connection
@@ -362,19 +366,26 @@ device_task = function(driver, device, task_token, rx_channel)
                         local current_transport_id = (device:get_field("active_app") or {}).transport_id
                         local message, recv_err = cast.read_message(conn, current_transport_id)
                         if message then
+                            last_rx = socket.gettime()
                             update_device_status(device, message)
+                        elseif not recv_err then
+                            -- Normal packet without status update (e.g. PONG, ignored protocol packets)
+                            last_rx = socket.gettime()
                         elseif recv_err == "timeout" then
                             -- Normal timeout
                         elseif recv_err == "closed" then
                             log.warn(string.format("[Session] (%s) Connection closed by remote", device.label))
-                            conn:close()
-                            conn = nil
-                            device:offline()
-                            discovery.update_device_addr(device)
-                            return "CONTINUE"
+                            return "DISCONNECTED"
                         end
                     end
                 end
+            end
+
+            -- 6. Check for socket inactivity timeout
+            now = socket.gettime()
+            if now - last_rx >= inactivity_timeout then
+                log.warn(string.format("[Session] (%s) Inactivity timeout: no data received for %ds", device.label, inactivity_timeout))
+                return "DISCONNECTED"
             end
 
             if should_exit then
@@ -387,11 +398,17 @@ device_task = function(driver, device, task_token, rx_channel)
         -- Handle pcall result
         if ok then
             if result == "TERMINATE_TASK" then
-                log.info(string.format("[Lifecycle] (%s) Task terminated cleanly", device.label))
+                log.info(string.format("[Lifecycle] (%s) Task terminated", device.label))
                 if conn then conn:close() end
                 return
+            elseif result == "DISCONNECTED" then
+                log.warn(string.format("[Session] (%s) Resetting disconnected connection", device.label))
+                if conn then conn:close() end
+                conn = nil
+                device:offline()
+                discovery.update_device_addr(device)
             end
-            -- When result is "CONTINUE" or "OK", loop continues
+            -- When result is "CONTINUE", "OK", or "DISCONNECTED", loop continues
         else
             -- Unexpected error (not control flow)
             local err = result
