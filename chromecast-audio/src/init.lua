@@ -22,19 +22,28 @@ local load_media
 -- Configuration Constants
 local PING_INTERVAL       = 5    -- Heartbeat interval (seconds)
 local POLL_INTERVAL       = 180  -- Status polling interval (seconds)
-local RECEIVE_TIMEOUT     = 0.5  -- Packet receive timeout (seconds)
+local SOCKET_TIMEOUT      = 5    -- Socket I/O timeout (seconds)
 local RECONNECT_DELAY     = 5    -- Initial reconnect delay (seconds)
 local MAX_RECONNECT_DELAY = 300  -- Maximum reconnect delay (seconds)
 
 
--- === Helper Function for Chromecast Command Queue ===
+-- === Helper Functions for Chromecast Command Channel ===
 
--- Helper: Add command to Tx queue
+-- Helper: Send message to device's Tx channel safely
+local function send_channel_message(device, msg)
+    local tx_channel = device:get_field("tx_channel")
+    if tx_channel then
+        return pcall(tx_channel.send, tx_channel, msg)
+    end
+    return false
+end
+
+-- Helper: Add command to Tx channel
 local function queue_command(device, cmd)
     log.info(string.format("[Queue] (%s) Command: NS=%s, Type=%s", device.label, cmd.namespace, cmd.data.type))
-    local queue = device:get_field("tx_queue") or {}
-    table.insert(queue, cmd)
-    device:set_field("tx_queue", queue)
+    if not send_channel_message(device, { type = "COMMAND", cmd = cmd }) then
+        log.warn(string.format("[Queue] (%s) No active command channel", device.label))
+    end
 end
 
 -- === Helper Functions for Generating SmartThings Capability Attribute Events ===
@@ -211,20 +220,23 @@ end
 
 -- Helper: Start device task (background loop)
 local function start_device_task(driver, device)
+    -- Terminate any previously running task for this device
+    send_channel_message(device, { type = "TERMINATE" })
+
+    local tx_channel, rx_channel = cosock.channel.new()
+    device:set_field("tx_channel", tx_channel)
+
     local new_token = tostring(socket.gettime()) .. "-" .. tostring(math.random(1000,9999))
     device:set_field("task_token", new_token)
 
     log.info(string.format("[Lifecycle] (%s) Spawning new task with token: %s", device.label, new_token))
     cosock.spawn(function()
-        device_task(driver, device, new_token)
+        device_task(driver, device, new_token, rx_channel)
     end, "chromecast_task_" .. device.id .. "_" .. new_token)
 end
 
--- The main background loop
--- @param driver Driver instance
--- @param device Device instance
--- @param task_token A unique token to identify this specific task instance
-device_task = function(driver, device, task_token)
+-- Helper: Main background loop for device task
+device_task = function(driver, device, task_token, rx_channel)
     log.info(string.format("Starting background task for %s (Token: %s)", device.label, task_token))
 
     local conn = nil
@@ -233,8 +245,8 @@ device_task = function(driver, device, task_token)
 
     local ping_interval    = PING_INTERVAL
     local poll_interval    = POLL_INTERVAL
-    local receive_timeout  = RECEIVE_TIMEOUT
     local reconnect_delay  = RECONNECT_DELAY
+    local pending_msg      = nil
 
     while true do
         -- Wrap entire iteration in pcall to handle device deletion gracefully
@@ -254,16 +266,26 @@ device_task = function(driver, device, task_token)
             -- 2. Connect if needed
             if not conn then
                 log.info(string.format("[Session] (%s) Connecting to %s:%s", device.label, tostring(ip), tostring(port)))
+                local err
                 conn, err = cast.connect(ip, port)
                 if conn then
-                    conn:settimeout(receive_timeout)
+                    conn:settimeout(SOCKET_TIMEOUT)
                     last_ping = socket.gettime()
                     device:set_field("active_app", {})  -- Reset active_app on new connection
                     device:online()
                     reconnect_delay = RECONNECT_DELAY  -- Reset backoff on successful connection
+
+                    -- Re-queue message received during reconnect wait
+                    if pending_msg then
+                        log.info(string.format("[Session] (%s) Re-injecting queued message on reconnect", device.label))
+                        send_channel_message(device, pending_msg)
+                        pending_msg = nil
+                    end
                 else
                     log.warn(string.format("[Session] (%s) Connection failed: %s", device.label, tostring(err)))
                     device:offline()
+                    pending_msg = nil  -- Clear on failure to prevent infinite retry loop
+
                     -- Check if IP/Port changed before retrying
                     if discovery.update_device_addr(device) then
                         reconnect_delay = RECONNECT_DELAY  -- Reset backoff if device found
@@ -271,54 +293,34 @@ device_task = function(driver, device, task_token)
                         reconnect_delay = math.min(reconnect_delay * 2, MAX_RECONNECT_DELAY)  -- Exponential backoff
                     end
                     log.info(string.format("[Session] (%s) Retrying connection in %d seconds", device.label, reconnect_delay))
-                    socket.sleep(reconnect_delay)
+
+                    -- Wait for reconnect delay or early wake-up on channel message
+                    local ready = socket.select({ rx_channel }, nil, reconnect_delay)
+                    if ready and #ready > 0 then
+                        local msg = rx_channel:receive()
+                        if msg then
+                            if msg.type == "TERMINATE" then
+                                return "TERMINATE_TASK"
+                            elseif msg.type == "COMMAND" then
+                                log.info(string.format("[Session] (%s) Command received during backoff, retrying immediately", device.label))
+                                pending_msg = msg
+                            end
+                        end
+                    end
                     return "CONTINUE"  -- Skip rest of this iteration
-                end
-            end
-
-            -- 3. Read and process incoming messages
-            local message, recv_err = cast.read_message(conn, (device:get_field("active_app") or {}).transport_id)
-            if message then
-                -- Update device status
-                update_device_status(device, message)
-            elseif recv_err == "timeout" then
-                -- Normal - there's no incoming message during receive timeout. Continue loop
-            elseif recv_err == "closed" then
-                conn:close()
-                conn = nil
-                device:offline()
-                -- Check if IP has changed before reconnecting
-                discovery.update_device_addr(device)
-                return "CONTINUE"  -- Skip rest of this iteration
-            end
-
-            -- 4. Process Outgoing Command Queue
-            local queue = device:get_field("tx_queue")
-            if queue and #queue > 0 then
-                -- Queue Swapping
-                device:set_field("tx_queue", {})
-
-                -- Build context for sentinel resolution
-                local context = {
-                    transport_id = (device:get_field("active_app") or {}).transport_id,
-                    media_session_id = device:get_field("media_session_id")
-                }
-
-                for _, cmd in ipairs(queue) do
-                    send_command(conn, cmd, context)
                 end
             end
 
             local now = socket.gettime()
 
-            -- 5. Send Heartbeat (Every 5s - Required per spec)
-            if now - last_ping > ping_interval then
+            -- 3. Send Heartbeat (Every 5s - Required per spec)
+            if now - last_ping >= ping_interval then
                 send_command(conn, cast.ping())
                 last_ping = now
             end
 
-            -- 6. Poll Status (Every 180s - Backup)
-            if now - last_poll > poll_interval then
+            -- 4. Poll Status (Every 180s - Backup)
+            if now - last_poll >= poll_interval then
                 log.info(string.format("[Poll] (%s) Polling device", device.label))
                 send_command(conn, cast.get_receiver_status())
                 local transport_id = (device:get_field("active_app") or {}).transport_id
@@ -328,13 +330,64 @@ device_task = function(driver, device, task_token)
                 last_poll = now
             end
 
+            -- 5. Wait for socket activity or incoming channel command
+            now = socket.gettime()
+            local timeout = math.max(0, ping_interval - (now - last_ping))
+            local ready_sockets = socket.select({ conn, rx_channel }, nil, timeout)
+            local should_exit = false
+
+            if ready_sockets and #ready_sockets > 0 then
+                for _, s in ipairs(ready_sockets) do
+                    if s == rx_channel then
+                        -- Handle commands from channel
+                        while true do
+                            local msg = rx_channel:receive()
+                            if msg then
+                                if msg.type == "TERMINATE" then
+                                    log.info(string.format("[Lifecycle] (%s) Received TERMINATE message. Exiting task.", device.label))
+                                    should_exit = true
+                                    break
+                                elseif msg.type == "COMMAND" then
+                                    local context = {
+                                        transport_id = (device:get_field("active_app") or {}).transport_id,
+                                        media_session_id = device:get_field("media_session_id")
+                                    }
+                                    send_command(conn, msg.cmd, context)
+                                end
+                            end
+                            if #rx_channel.link.queue == 0 then break end
+                        end
+                    elseif s == conn then
+                        -- Read incoming messages
+                        local current_transport_id = (device:get_field("active_app") or {}).transport_id
+                        local message, recv_err = cast.read_message(conn, current_transport_id)
+                        if message then
+                            update_device_status(device, message)
+                        elseif recv_err == "timeout" then
+                            -- Normal timeout
+                        elseif recv_err == "closed" then
+                            log.warn(string.format("[Session] (%s) Connection closed by remote", device.label))
+                            conn:close()
+                            conn = nil
+                            device:offline()
+                            discovery.update_device_addr(device)
+                            return "CONTINUE"
+                        end
+                    end
+                end
+            end
+
+            if should_exit then
+                return "TERMINATE_TASK"
+            end
+
             return "OK"
         end)
 
         -- Handle pcall result
         if ok then
             if result == "TERMINATE_TASK" then
-                log.info(string.format("[Lifecycle] (%s) Task terminated: New task found", device.label))
+                log.info(string.format("[Lifecycle] (%s) Task terminated cleanly", device.label))
                 if conn then conn:close() end
                 return
             end
@@ -606,8 +659,9 @@ local function device_removed(_, device)
         return
     end
 
-    -- Setting token to nil causes the running task to exit on next loop
     device:set_field("task_token", nil)
+    send_channel_message(device, { type = "TERMINATE" })
+    device:set_field("tx_channel", nil)
 end
 
 -- === Driver Definition ===
