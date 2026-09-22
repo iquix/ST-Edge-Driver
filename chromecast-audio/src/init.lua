@@ -65,12 +65,18 @@ local function emit_stopped_events(device)
     device:emit_event(capabilities.mediaPlayback.playbackStatus.stopped())
     device:emit_event(capabilities.audioTrackData.audioTrackData({title="", album="", mediaSource=""}))
     turn_off_child_switches(device)
+    device:set_field("restore_state", nil)
 end
 
--- === Helper Functions for Volume Restoration After Media Playback ===
+-- === Helper Functions for State Restoration After Media Playback ===
 
--- Helper: Save current volume state for restoration later
-local function snapshot_volume_state(device)
+-- Helper: Save current state for restoration later
+local function snapshot_restore_state(device)
+    -- Do not overwrite if a snapshot is already in progress
+    if device:get_field("restore_state") ~= nil then
+        return
+    end
+
     local state = {}
     -- Save original volume
     local current_vol = device:get_latest_state("main", capabilities.audioVolume.ID, capabilities.audioVolume.volume.NAME)
@@ -82,9 +88,11 @@ local function snapshot_volume_state(device)
     if current_mute == "muted" then
         state.muted = true
     end
-    if next(state) ~= nil then
-        device:set_field("volume_state", state)
-    end
+    -- Save active app ID
+    local active_app = device:get_field("active_app") or {}
+    state.app_id = active_app.app_id
+
+    device:set_field("restore_state", state)
 end
 
 -- Helper: Handle notification/child media playback completion
@@ -95,7 +103,7 @@ local function handle_media_playback_finished(device)
     end
 
     -- Restore original volume and mute state
-    local restore_state = device:get_field("volume_state")
+    local restore_state = device:get_field("restore_state")
     if restore_state then
         log.info(string.format("[Volume] (%s) Restoring - volume: %s, muted: %s", device.label, tostring(restore_state.volume), tostring(restore_state.muted)))
         if restore_state.volume then
@@ -104,14 +112,18 @@ local function handle_media_playback_finished(device)
         if restore_state.muted then
             queue_command(device, cast.set_volume_muted(true))
         end
-        device:set_field("volume_state", nil)
+        device:set_field("restore_state", nil)
     end
 
-    -- Auto-stop receiver app
-    log.info(string.format("[Auto-Stop] (%s) Media playback finished. Stopping receiver app.", device.label))
-    local session_id = (device:get_field("active_app") or {}).session_id
-    if session_id then
-        queue_command(device, cast.stop_app(session_id))
+    -- Auto-stop receiver app only if Default Media Receiver was not already running before playback
+    if restore_state and restore_state.app_id == cast.APP_ID then
+        log.info(string.format("[Auto-Stop] (%s) Media playback finished. Default Media Receiver was already running before notification, keeping app active.", device.label))
+    else
+        log.info(string.format("[Auto-Stop] (%s) Media playback finished. Stopping receiver app.", device.label))
+        local session_id = (device:get_field("active_app") or {}).session_id
+        if session_id then
+            queue_command(device, cast.stop_app(session_id))
+        end
     end
 end
 
@@ -486,8 +498,8 @@ local function play_media_handler(driver, device, command)
         -- Set media type to notification
         device:set_field("media_type", "notification")
 
-        -- Save original volume and mute status
-        snapshot_volume_state(device)
+        -- Save original volume, mute, and app status
+        snapshot_restore_state(device)
         
         -- Set notification volume and unmute (snapshot was taken above)
         volume = command.args.level or (device.preferences.audioNotiVolume ~= 0 and device.preferences.audioNotiVolume or nil)
@@ -676,8 +688,8 @@ local function device_removed(_, device)
         return
     end
 
-    device:set_field("task_token", nil)
     send_channel_message(device, { type = "TERMINATE" })
+    device:set_field("task_token", nil)
     device:set_field("tx_channel", nil)
 end
 
