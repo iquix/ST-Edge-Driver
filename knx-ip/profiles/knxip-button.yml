@@ -1,0 +1,68 @@
+name: knxip-button
+components:
+- id: main
+  capabilities:
+  - id: button
+    version: 1
+  categories:
+  - name: Button
+preferences:
+  - name: pressedAddr
+    title: "Pressed:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: pressedPayload
+    title: "Pressed:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: heldAddr
+    title: "Held:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: heldPayload
+    title: "Held:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: holdDownAddr
+    title: "Hold Down:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdDownPayload
+    title: "Hold Down:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+      
+  - name: holdUpAddr
+    title: "Hold Up:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdUpPayload
+    title: "Hold Up:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""

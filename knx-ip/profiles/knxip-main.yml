@@ -1,0 +1,69 @@
+name: knxip-main
+components:
+- id: main
+  capabilities:
+  - id: refresh
+    version: 1
+  - id: iquix.knxtelegram
+    version: 1
+  categories:
+  - name: Bridges
+preferences:
+  - title: "KNX-IP Interface Address"
+    name: addr
+    description: "Leave empty to use auto-discovered address, or enter to override (e.g. 192.168.1.254:3671)"
+    required: false
+    preferenceType: string
+    definition:
+      stringType: text
+      minLength: 0
+      default: ""
+  - title: "Create: Button"
+    name: createButton
+    description: "Turn off & back ON to create a button"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: 2-Button"
+    name: createButton2
+    description: "Turn off & back ON to create a 2-button"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: Illuminance"
+    name: createIlluminance
+    description: "Turn off & back ON to create a illuminance sensor"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: Color Temp"
+    name: createColorTemperature
+    description: "Turn off & back ON to create a color temperature sensor"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: Switch"
+    name: createSwitch
+    description: "Turn off & back ON to create a switch"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: Color Temp Bulb"
+    name: createColorTempBulb
+    description: "Turn off & back ON to create a color temp bulb"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true
+  - title: "Create: Fan 5-Speed"
+    name: createFan5speed
+    description: "Turn off & back ON to create a 5-speed fan"
+    required: true
+    preferenceType: boolean
+    definition:
+      default: true

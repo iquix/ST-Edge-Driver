@@ -1,0 +1,62 @@
+name: knxip-color-temp-bulb
+components:
+  - id: main
+    capabilities:
+      - id: switch
+        version: 1
+      - id: switchLevel
+        version: 1
+      - id: statelessSwitchLevelStep
+        version: 1
+      - id: colorTemperature
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: Light
+
+preferences:
+  - name: cmdSwitch
+    title: "Switch Set(1.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: switch
+    title: "Switch Status(1.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: cmdLevel
+    title: "Level Set(5.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: level
+    title: "Level Status(5.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: cmdColorTemperature
+    title: "Color Temp Set(7.600):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: colorTemperature
+    title: "Color Temp Status(7.600):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""

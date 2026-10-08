@@ -1,0 +1,5 @@
+name: 'KNX IP Connector'
+packageKey: 'knx-ip'
+permissions:
+    lan: {}
+    discovery: {}

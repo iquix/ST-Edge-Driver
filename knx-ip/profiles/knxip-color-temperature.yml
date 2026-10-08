@@ -1,0 +1,19 @@
+name: knxip-color-temperature
+components:
+  - id: main
+    capabilities:
+      - id: colorTemperature
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: LightSensor
+
+preferences:
+  - name: colorTemperature
+    title: "Color Temp(7.600):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""

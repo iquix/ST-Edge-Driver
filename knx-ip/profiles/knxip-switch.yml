@@ -1,0 +1,26 @@
+name: knxip-switch
+components:
+  - id: main
+    capabilities:
+      - id: switch
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: Switch
+
+preferences:
+  - name: cmdSwitch
+    title: "Switch Set(1.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: switch
+    title: "Switch Status(1.001):Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""

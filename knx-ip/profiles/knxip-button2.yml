@@ -1,0 +1,142 @@
+name: knxip-button2
+components:
+  - id: main
+    capabilities:
+      - id: refresh
+        version: 1
+    categories:
+      - name: RemoteController
+  - id: button1
+    capabilities:
+      - id: button
+        version: 1
+    categories:
+      - name: RemoteController
+  - id: button2
+    capabilities:
+      - id: button
+        version: 1
+    categories:
+      - name: RemoteController
+
+preferences:
+  - name: pressedAddr1
+    title: "[1]Pressed:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: pressedPayload1
+    title: "[1]Pressed:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: heldAddr1
+    title: "[1]Held:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: heldPayload1
+    title: "[1]Held:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: holdDownAddr1
+    title: "[1]Hold Down:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdDownPayload1
+    title: "[1]Hold Down:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: holdUpAddr1
+    title: "[1]Hold Up:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdUpPayload1
+    title: "[1]Hold Up:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+
+  - name: pressedAddr2
+    title: "[2]Pressed:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: pressedPayload2
+    title: "[2]Pressed:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: heldAddr2
+    title: "[2]Held:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: heldPayload2
+    title: "[2]Held:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+
+  - name: holdDownAddr2
+    title: "[2]Hold Down:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdDownPayload2
+    title: "[2]Hold Down:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+      
+  - name: holdUpAddr2
+    title: "[2]Hold Up:Group Addr"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
+  - name: holdUpPayload2
+    title: "[2]Hold Up:Payload"
+    required: true
+    preferenceType: string
+    definition:
+      stringType: text
+      default: ""
